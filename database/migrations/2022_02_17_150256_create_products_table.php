@@ -19,6 +19,7 @@ class CreateProductsTable extends Migration
             $table->decimal('price');
             $table->decimal('discount')->default(0);
             $table->text('description')->nullable();
+            $table->enum('almacen', ['farmacia', 'deposito'])->default('farmacia');
             $table->softDeletes();
             $table->timestamps();
         });
