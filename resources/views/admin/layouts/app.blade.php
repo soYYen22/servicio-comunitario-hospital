@@ -93,6 +93,9 @@
 <!-- Custom JS -->
 <script src="{{asset('assets/js/script.js')}}"></script>
 
+<!-- DataTables custom translations / customizer -->
+<script src="{{asset('assets/js/datatables-customizer.js')}}"></script>
+
 <script>
     $(document).ready(function(){
         $('body').on('click','#deletebtn',function(){
