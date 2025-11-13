@@ -59,7 +59,7 @@
     $(document).ready(function() {
         var table = $('#product-table').DataTable({
             processing: true,
-            serverSide: true,
+            serverSide: false,
             ajax: "{{route('products.index')}}",
             columns: [
                 {data: 'product', name: 'product'},

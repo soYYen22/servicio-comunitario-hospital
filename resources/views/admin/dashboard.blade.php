@@ -125,7 +125,7 @@
         </div>
     </div>
 
-    <div class="col-md-12 col-lg-6">
+    {{-- <div class="col-md-12 col-lg-6">
         <!-- Pie Chart -->
         <div class="card card-chart">
             <div class="card-header">
@@ -138,7 +138,7 @@
             </div>
         </div>
         <!-- /Pie Chart -->
-    </div>	
+    </div>	 --}}
 </div>
 @endsection
 

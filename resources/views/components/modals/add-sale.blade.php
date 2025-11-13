@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Sell Product</h5>
+                <h5 class="modal-title">Vender producto</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -14,7 +14,7 @@
                     <div class="row form-row">
                         <div class="col-12">
                             <div class="form-group">
-                                <label>Product <span class="text-danger">*</span></label>
+                                <label>Producto <span class="text-danger">*</span></label>
                                 <select class="select2 form-select form-control" name="product"> 
                                     @foreach (\App\Models\Product::get() as $product)
                                         @if (!empty($product->purchase))
@@ -28,12 +28,12 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <label>Quantity</label>
+                                <label>Cantidad</label>
                                 <input type="number" value="1" class="form-control" name="quantity">
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+                    <button type="submit" class="btn btn-primary btn-block">Guardar</button>
                 </form>
             </div>
         </div>
