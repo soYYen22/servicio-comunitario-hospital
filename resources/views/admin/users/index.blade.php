@@ -8,14 +8,14 @@
 
 @push('page-header')
 <div class="col-sm-7 col-auto">
-	<h3 class="page-title">User</h3>
+	<h3 class="page-title">Usuarios</h3>
 	<ul class="breadcrumb">
-		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Dashboard</a></li>
-		<li class="breadcrumb-item active">Users</li>
+		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Panel Principal</a></li>
+		<li class="breadcrumb-item active">Usuarios</li>
 	</ul>
 </div>
 <div class="col-sm-5 col">
-	<a href="{{route('users.create')}}" class="btn btn-primary float-right mt-2">Add User</a>
+	<a href="{{route('users.create')}}" class="btn btn-primary float-right mt-2">Agregar Usuario</a>
 </div>
 
 @endpush
@@ -28,13 +28,13 @@
 				<div class="table-responsive">
 					<table id="user-table" class="datatable table table-striped table-bordered table-hover table-center mb-0">
 						<thead>
-							<tr style="boder:1px solid black;">
-								<th>Name</th>
-								<th>Email</th>
-								<th>Role</th>
+							<tr style="border:1px solid black;">
+								<th>Nombre</th>
+								<th>Correo Electrónico</th>
+								<th>Rol</th>
 								<th>Avatar</th>
-								<th>Created date</th>
-								<th class="text-center action-btn">Actions</th>
+								<th>Fecha de Creación</th>
+								<th class="text-center action-btn">Acciones</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -60,11 +60,10 @@ $(document).ready(function() {
             {data: 'email', name: 'email'},
             {data: 'role', name: 'role'},
 			{data: 'avatar', name: 'avatar', orderable: false, searchable: false},
-            {data: 'created_at',name: 'created_at'},
+            {data: 'created_at', name: 'created_at'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ]
     });
-    
 });
 </script>
 @endpush

@@ -8,15 +8,15 @@
 
 @push('page-header')
 <div class="col-sm-7 col-auto">
-	<h3 class="page-title">Sales</h3>
+	<h3 class="page-title">Ventas</h3>
 	<ul class="breadcrumb">
-		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Dashboard</a></li>
-		<li class="breadcrumb-item active">Sales</li>
+		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Panel Principal</a></li>
+		<li class="breadcrumb-item active">Ventas</li>
 	</ul>
 </div>
 @can('create-sale')
 <div class="col-sm-5 col">
-	<a href="{{route('sales.create')}}" class="btn btn-primary float-right mt-2">Add Sale</a>
+	<a href="{{route('sales.create')}}" class="btn btn-primary float-right mt-2">Agregar Venta</a>
 </div>
 @endcan
 @endpush
@@ -25,18 +25,18 @@
 <div class="row">
 	<div class="col-md-12">
 	
-		<!--  Sales -->
+		<!--  Ventas -->
 		<div class="card">
 			<div class="card-body">
 				<div class="table-responsive">
 					<table id="sales-table" class="datatable table table-hover table-center mb-0">
 						<thead>
 							<tr>
-								<th>Medicine Name</th>
-								<th>Quantity</th>
-								<th>Total Price</th>
-								<th>Date</th>
-								<th class="action-btn">Action</th>
+								<th>Nombre del Producto</th>
+								<th>Cantidad</th>
+								<th>Precio Total</th>
+								<th>Fecha</th>
+								<th class="action-btn">Acción</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -46,11 +46,10 @@
 				</div>
 			</div>
 		</div>
-		<!-- / sales -->
+		<!-- / Ventas -->
 		
 	</div>
 </div>
-
 
 @endsection
 

@@ -2,21 +2,20 @@
 
 <x-assets.datatables />
 
-
 @push('page-css')
     
 @endpush
 
 @push('page-header')
 <div class="col-sm-7 col-auto">
-	<h3 class="page-title">Sales Reports</h3>
+	<h3 class="page-title">Reportes de Ventas</h3>
 	<ul class="breadcrumb">
-		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Dashboard</a></li>
-		<li class="breadcrumb-item active">Generate Sales Reports</li>
+		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Panel Principal</a></li>
+		<li class="breadcrumb-item active">Generar Reportes de Ventas</li>
 	</ul>
 </div>
 <div class="col-sm-5 col">
-	<a href="#generate_report" data-toggle="modal" class="btn btn-primary float-right mt-2">Generate Report</a>
+	<a href="#generate_report" data-toggle="modal" class="btn btn-primary float-right mt-2">Generar Reporte</a>
 </div>
 @endpush
 
@@ -25,17 +24,17 @@
 	<div class="col-md-12">
 	
 		@isset($sales)
-            <!--  Sales Report -->
+            <!--  Reporte de Ventas -->
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
                         <table id="sales-table" class="datatable table table-hover table-center mb-0">
                             <thead>
                                 <tr>
-                                    <th>Medicine Name</th>
-                                    <th>Quantity</th>
-                                    <th>Total Price</th>
-                                    <th>Date</th>
+                                    <th>Nombre del Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Total</th>
+                                    <th>Fecha</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -46,14 +45,13 @@
                                                 {{$sale->product->purchase->product}}
                                                 @if (!empty($sale->product->purchase->image))
                                                     <span class="avatar avatar-sm mr-2">
-                                                    <img class="avatar-img" src="{{asset("storage/purchases/".$sale->product->purchase->image)}}" alt="image">
+                                                    <img class="avatar-img" src="{{asset("storage/purchases/".$sale->product->purchase->image)}}" alt="imagen">
                                                     </span>
                                                 @endif
                                             </td>
                                             <td>{{$sale->quantity}}</td>
                                             <td>{{AppSettings::get('app_currency', '$')}} {{($sale->total_price)}}</td>
                                             <td>{{date_format(date_create($sale->created_at),"d M, Y")}}</td>
-                                            
                                         </tr>
                                     @endif
                                 @endforeach
@@ -62,20 +60,20 @@
                     </div>
                 </div>
             </div>
-            <!-- / sales Report -->
+            <!-- / Reporte de Ventas -->
         @endisset
        
 		
 	</div>
 </div>
 
-<!-- Generate Modal -->
+<!-- Modal Generar Reporte -->
 <div class="modal fade" id="generate_report" aria-hidden="true" role="dialog">
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title">Generate Report</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<h5 class="modal-title">Generar Reporte</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
@@ -87,26 +85,26 @@
 							<div class="row">
 								<div class="col-6">
 									<div class="form-group">
-										<label>From</label>
+										<label>Desde</label>
 										<input type="date" name="from_date" class="form-control from_date">
 									</div>
 								</div>
 								<div class="col-6">
 									<div class="form-group">
-										<label>To</label>
+										<label>Hasta</label>
 										<input type="date" name="to_date" class="form-control to_date">
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-					<button type="submit" class="btn btn-primary btn-block submit_report">Submit</button>
+					<button type="submit" class="btn btn-primary btn-block submit_report">Generar</button>
 				</form>
 			</div>
 		</div>
 	</div>
 </div>
-<!-- /Generate Modal -->
+<!-- /Modal Generar Reporte -->
 @endsection
 
 @push('page-js')
@@ -117,7 +115,7 @@
 			buttons: [
 				{
 				extend: 'collection',
-				text: 'Export Data',
+				text: 'Exportar Datos',
 				buttons: [
 					{
 						extend: 'pdf',

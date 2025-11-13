@@ -8,14 +8,14 @@
 
 @push('page-header')
 <div class="col-sm-7 col-auto">
-	<h3 class="page-title">Supplier</h3>
+	<h3 class="page-title">Proveedores</h3>
 	<ul class="breadcrumb">
-		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Dashboard</a></li>
-		<li class="breadcrumb-item active">Supplier</li>
+		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Panel Principal</a></li>
+		<li class="breadcrumb-item active">Proveedores</li>
 	</ul>
 </div>
 <div class="col-sm-5 col">
-	<a href="{{route('suppliers.create')}}" class="btn btn-primary float-right mt-2">Add New</a>
+	<a href="{{route('suppliers.create')}}" class="btn btn-primary float-right mt-2">Agregar Nuevo</a>
 </div>
 @endpush
 
@@ -23,20 +23,20 @@
 <div class="row">
 	<div class="col-md-12">
 	
-		<!-- Suppliers -->
+		<!-- Proveedores -->
 		<div class="card">
 			<div class="card-body">
 				<div class="table-responsive">
 					<table id="supplier-table" class="datatable table table-hover table-center mb-0">
 						<thead>
 							<tr>
-								<th>Product</th>
-								<th>Name</th>
-								<th>Phone</th>
-								<th>Email</th>
-								<th>Address</th>
-								<th>Company</th>
-								<th class="action-btn">Action</th>
+								<th>Producto</th>
+								<th>Nombre</th>
+								<th>Teléfono</th>
+								<th>Correo Electrónico</th>
+								<th>Dirección</th>
+								<th>Compañía</th>
+								<th class="action-btn">Acción</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -53,10 +53,10 @@
 								<td>
 									<div class="actions">
 										<a class="btn btn-sm bg-success-light" href="{{route('edit-supplier',$supplier)}}">
-											<i class="fe fe-pencil"></i> Edit
+											<i class="fe fe-pencil"></i> Editar
 										</a>
 										<a data-id="{{$supplier->id}}" href="javascript:void(0);" class="btn btn-sm bg-danger-light deletebtn" data-toggle="modal">
-											<i class="fe fe-trash"></i> Delete
+											<i class="fe fe-trash"></i> Eliminar
 										</a>
 									</div>
 								</td>
@@ -67,7 +67,7 @@
 				</div>
 			</div>
 		</div>
-		<!-- /Suppliers-->
+		<!-- /Proveedores -->
 		
 	</div>
 </div>
@@ -87,11 +87,10 @@
                 {data: 'email', name: 'email'},
                 {data: 'phone', name: 'phone'},
                 {data: 'address', name: 'address'},
-                {data: 'company',name: 'company'},
+                {data: 'company', name: 'company'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });
-        
     });
 </script> 
 @endpush

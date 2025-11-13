@@ -8,9 +8,9 @@
 
 @push('page-header')
 <div class="col-sm-12">
-	<h3 class="page-title">Welcome {{auth()->user()->name}}!</h3>
+	<h3 class="page-title">¡Bienvenido {{auth()->user()->name}}!</h3>
 	<ul class="breadcrumb">
-		<li class="breadcrumb-item active">Dashboard</li>
+		<li class="breadcrumb-item active">Panel de Control</li>
 	</ul>
 </div>
 @endpush
@@ -29,7 +29,7 @@
                     </div>
                 </div>
                 <div class="dash-widget-info">
-                    <h6 class="text-muted">Today Sales Cash</h6>
+                    <h6 class="text-muted">Ventas en Efectivo de Hoy</h6>
                     <div class="progress progress-sm">
                         <div class="progress-bar bg-primary w-50"></div>
                     </div>
@@ -49,8 +49,7 @@
                     </div>
                 </div>
                 <div class="dash-widget-info">
-                    
-                    <h6 class="text-muted">Product Categories</h6>
+                    <h6 class="text-muted">Categorías de Productos</h6>
                     <div class="progress progress-sm">
                         <div class="progress-bar bg-success w-50"></div>
                     </div>
@@ -70,8 +69,7 @@
                     </div>
                 </div>
                 <div class="dash-widget-info">
-                    
-                    <h6 class="text-muted">Expired Products</h6>
+                    <h6 class="text-muted">Productos Vencidos</h6>
                     <div class="progress progress-sm">
                         <div class="progress-bar bg-danger w-50"></div>
                     </div>
@@ -91,8 +89,7 @@
                     </div>
                 </div>
                 <div class="dash-widget-info">
-                    
-                    <h6 class="text-muted">System Users</h6>
+                    <h6 class="text-muted">Usuarios del Sistema</h6>
                     <div class="progress progress-sm">
                         <div class="progress-bar bg-warning w-50"></div>
                     </div>
@@ -101,21 +98,22 @@
         </div>
     </div>
 </div>
+
 <div class="row">
     <div class="col-md-12 col-lg-6">
         <div class="card card-table p-3">
             <div class="card-header">
-                <h4 class="card-title ">Today Sales</h4>
+                <h4 class="card-title ">Ventas de Hoy</h4>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table id="sales-table" class="datatable table table-hover table-center mb-0">
                         <thead>
                             <tr>
-                                <th>Medicine</th>
-                                <th>Quantity</th>
-                                <th>Total Price</th>
-                                <th>Date</th>
+                                <th>Medicamento</th>
+                                <th>Cantidad</th>
+                                <th>Precio Total</th>
+                                <th>Fecha</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -128,11 +126,10 @@
     </div>
 
     <div class="col-md-12 col-lg-6">
-                    
         <!-- Pie Chart -->
         <div class="card card-chart">
             <div class="card-header">
-                <h4 class="card-title text-center">Resources</h4>
+                <h4 class="card-title text-center">Recursos</h4>
             </div>
             <div class="card-body">
                 <div style="">
@@ -141,12 +138,8 @@
             </div>
         </div>
         <!-- /Pie Chart -->
-        
     </div>	
-    
-    
 </div>
-
 @endsection
 
 @push('page-js')
@@ -163,7 +156,6 @@
 				{data: 'date', name: 'date'},
             ]
         });
-        
     });
 </script> 
 <script src="{{asset('assets/plugins/chart.js/Chart.bundle.min.js')}}"></script>

@@ -8,14 +8,14 @@
 
 @push('page-header')
 <div class="col-sm-7 col-auto">
-	<h3 class="page-title">Products</h3>
+	<h3 class="page-title">Productos</h3>
 	<ul class="breadcrumb">
-		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Dashboard</a></li>
-		<li class="breadcrumb-item active">Products</li>
+		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Panel</a></li>
+		<li class="breadcrumb-item active">Productos</li>
 	</ul>
 </div>
 <div class="col-sm-5 col">
-	<a href="{{route('products.create')}}" class="btn btn-primary float-right mt-2">Add Product</a>
+	<a href="{{route('products.create')}}" class="btn btn-primary float-right mt-2">Agregar producto</a>
 </div>
 @endpush
 
@@ -23,31 +23,31 @@
 <div class="row">
 	<div class="col-md-12">
 	
-		<!-- Products -->
+		<!-- Productos -->
 		<div class="card">
 			<div class="card-body">
 				<div class="table-responsive">
 					<table id="product-table" class="datatable table table-hover table-center mb-0">
 						<thead>
 							<tr>
-								<th>Product Name</th>
-								<th>Category</th>
-								<th>Price</th>
-								<th>Quantity</th>
-								<th>Discount</th>
-								<th>Expiry Date</th>
-								<th class="action-btn">Action</th>
+								<th>Nombre del producto</th>
+								<th>Categoría</th>
+								<th>Precio</th>
+								<th>Cantidad</th>
+								<th>Descuento</th>
+								<th>Fecha de vencimiento</th>
+								<th class="action-btn">Acción</th>
 							</tr>
 						</thead>
 						<tbody>
 
-														
+														 
 						</tbody>
 					</table>
 				</div>
 			</div>
 		</div>
-		<!-- /Products -->
+		<!-- /Productos -->
 		
 	</div>
 </div>

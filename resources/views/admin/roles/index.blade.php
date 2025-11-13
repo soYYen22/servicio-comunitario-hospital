@@ -6,14 +6,13 @@
 <div class="col-sm-7 col-auto">
 	<h3 class="page-title">Roles</h3>
 	<ul class="breadcrumb">
-		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Dashboard</a></li>
+		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Panel Principal</a></li>
 		<li class="breadcrumb-item active">Roles</li>
 	</ul>
 </div>
 <div class="col-sm-5 col">
-	<a href="{{route('roles.create')}}" class="btn btn-primary float-right mt-2">Add Role</a>
+	<a href="{{route('roles.create')}}" class="btn btn-primary float-right mt-2">Agregar Rol</a>
 </div>
-
 @endpush
 
 @section('content')
@@ -25,14 +24,13 @@
 				<div class="table-responsive">
 					<table id="role-table" class="datatable table table-striped table-bordered table-hover table-center mb-0">
 						<thead>
-							<tr style="boder:1px solid black;">
-								<th>Name</th>
-								<th>Permissions</th>
-								<th class="text-center action-btn">Actions</th>
+							<tr>
+								<th>Nombre</th>
+								<th>Permisos</th>
+								<th class="text-center action-btn">Acciones</th>
 							</tr>
 						</thead>
-						<tbody>
-													
+						<tbody>				
 						</tbody>
 					</table>
 				</div>
@@ -57,9 +55,6 @@
                     {data: 'action', name: 'action', orderable: false, searchable: false},
                 ]
             });
-			
-			//
 		});
 	</script>
-	
 @endpush

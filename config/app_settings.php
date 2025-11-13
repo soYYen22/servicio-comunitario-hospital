@@ -2,57 +2,56 @@
 
 return [
 
-    // All the sections for the settings page
+    // Todas las secciones de la página de configuración
     'sections' => [
         'app' => [
-            'title' => 'General Settings',
-            'descriptions' => '', // (optional)
-            'icon' => 'fa fa-cog', // (optional)
+            'title' => 'Configuración General',
+            'descriptions' => '', // (opcional)
+            'icon' => 'fa fa-cog', // (opcional)
 
             'inputs' => [
                 [
-                    'name' => 'app_name', // unique key for setting
-                    'type' => 'text', // type of input can be text, number, textarea, select, boolean, checkbox etc.
-                    'label' => 'App Name', // label for input
-                    // optional properties
-                    'placeholder' => 'Application Name', // placeholder for input
-                    'class' => 'form-control', // override global input_class
-                    'style' => '', // any inline styles
-                    'rules' => 'required|min:2|max:20', // validation rules for this input
-                    'value' => config('app.name'), // any default value
-                    'hint' => 'You can set the app name here' // help block text for input
+                    'name' => 'app_name', // clave única para el ajuste
+                    'type' => 'text', // tipo de entrada (text, number, textarea, etc.)
+                    'label' => 'Nombre de la Aplicación', // etiqueta del campo
+                    // propiedades opcionales
+                    'placeholder' => 'Nombre de la Aplicación', // texto de marcador
+                    'class' => 'form-control', // clase CSS
+                    'style' => '', // estilos en línea
+                    'rules' => 'required|min:2|max:20', // validación
+                    'value' => config('app.name'), // valor por defecto
+                    'hint' => 'Puedes establecer aquí el nombre de la aplicación' // texto de ayuda
                 ],
                 [
                     'name' => 'app_currency',
                     'type' => 'text',
-                    'label' => 'App Currency',
-                    'placeholder' => 'Application Currency',
+                    'label' => 'Moneda',
+                    'placeholder' => 'Símbolo de la moneda',
                     'class' => 'form-control',
-                    'style' => '', // any inline styles
-                    'rules' => 'required|max:10', // validation rules for this input
-                    'value' => '$', // any default value
-                    'hint' => 'Use your currency symbol like $',
+                    'style' => '', // estilos en línea
+                    'rules' => 'required|max:10', // validación
+                    'value' => '$', // valor por defecto
+                    'hint' => 'Usa el símbolo de tu moneda, por ejemplo $',
                 ],
                 [
                     'name' => 'logo',
                     'type' => 'image',
-                    'label' => 'Upload logo',
-                    'hint' => 'Recommended image size is 150px x 150px',
+                    'label' => 'Subir Logo',
+                    'hint' => 'Tamaño recomendado de la imagen: 150px x 150px',
                     'rules' => 'image|max:500',
-                    'disk' => 'public', // which disk you want to upload
-                    'path' => 'logos', // path on the disk,
+                    'disk' => 'public', // disco donde se guarda
+                    'path' => 'logos', // ruta en el disco
                     'preview_class' => 'thumbnail',
                     'preview_style' => 'height:40px'
-                ]
-                   ,
+                ],
                 [
                     'name' => 'favicon',
                     'type' => 'image',
-                    'label' => 'Upload favicon',
-                    'hint' => 'Recommended image size is 16px x 16px or 32px x 32px',
+                    'label' => 'Subir Ícono (Favicon)',
+                    'hint' => 'Tamaño recomendado de la imagen: 16px x 16px o 32px x 32px',
                     'rules' => 'image|max:500',
-                    'disk' => 'public', // which disk you want to upload
-                    'path' => 'logos', // path on the disk,
+                    'disk' => 'public',
+                    'path' => 'logos',
                     'preview_class' => 'thumbnail',
                     'preview_style' => 'height:40px'
                 ],
@@ -61,23 +60,23 @@ return [
         
     ],
 
-    // Setting page url, will be used for get and post request
+    // URL de la página de configuración (para GET y POST)
     'url' => 'settings',
 
-    // Any middleware you want to run on above route
+    // Middleware a ejecutar en esta ruta
     'middleware' => ['auth'],
 
-    // View settings
+    // Vista utilizada para la página de configuración
     // 'setting_page_view' => 'app_settings::settings_page',
     'setting_page_view' => 'admin.settings',
     'flash_partial' => 'app_settings::_flash',
 
-    // Setting section class setting
+    // Clases CSS para secciones
     'section_class' => 'card mb-3',
     'section_heading_class' => 'card-header',
     'section_body_class' => 'card-body',
 
-    // Input wrapper and group class setting
+    // Clases CSS para los inputs
     'input_wrapper_class' => 'form-group',
     'input_class' => 'form-control',
     'input_error_class' => 'has-error',
@@ -85,17 +84,17 @@ return [
     'input_hint_class' => 'form-text text-muted',
     'input_error_feedback_class' => 'text-danger',
 
-    // Submit button
-    'submit_btn_text' => 'Save Settings',
-    'submit_success_message' => 'Settings has been saved.',
+    // Botón de guardar
+    'submit_btn_text' => 'Guardar Configuración',
+    'submit_success_message' => 'La configuración se ha guardado correctamente.',
 
-    // Remove any setting which declaration removed later from sections
+    // Eliminar configuraciones huérfanas (que ya no existan)
     'remove_abandoned_settings' => false,
 
-    // Controller to show and handle save setting
+    // Controlador que maneja la página y el guardado
     'controller' => '\App\Http\Controllers\Admin\SettingController',
 
-    // settings group
+    // Grupo de configuración
     'setting_group' => function() {
         // return 'user_'.auth()->id();
         return 'default';

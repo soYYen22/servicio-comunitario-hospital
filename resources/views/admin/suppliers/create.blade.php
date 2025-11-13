@@ -1,16 +1,16 @@
 @extends('admin.layouts.app')
 
 @push('page-css')
-	<!-- Datetimepicker CSS -->
+	<!-- CSS del Selector de Fecha y Hora -->
 	<link rel="stylesheet" href="{{asset('assets/css/bootstrap-datetimepicker.min.css')}}">
 @endpush
 
 @push('page-header')
 <div class="col-sm-12">
-	<h3 class="page-title">Add Supplier</h3>
+	<h3 class="page-title">Agregar Proveedor</h3>
 	<ul class="breadcrumb">
-		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Dashboard</a></li>
-		<li class="breadcrumb-item active">Add Supplier</li>
+		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Panel Principal</a></li>
+		<li class="breadcrumb-item active">Agregar Proveedor</li>
 	</ul>
 </div>
 @endpush
@@ -21,8 +21,7 @@
 		<div class="card">
 			<div class="card-body custom-edit-service">
 				
-		
-			<!-- Add Supplier -->
+			<!-- Agregar Proveedor -->
 			<form method="post" enctype="multipart/form-data" action="{{route('suppliers.store')}}">
 				@csrf
 				
@@ -30,12 +29,12 @@
 					<div class="row">
 						<div class="col-lg-6">
 							<div class="form-group">
-								<label>Name<span class="text-danger">*</span></label>
+								<label>Nombre<span class="text-danger">*</span></label>
 								<input class="form-control" type="text" name="name">
 							</div>
 						</div>
 						<div class="col-lg-6">
-							<label>Email<span class="text-danger">*</span></label>
+							<label>Correo Electrónico<span class="text-danger">*</span></label>
 							<input class="form-control" type="text" name="email" id="email">
 						</div>
 					</div>
@@ -45,12 +44,12 @@
 					<div class="row">
 						<div class="col-lg-6">
 							<div class="form-group">
-								<label>Phone<span class="text-danger">*</span></label>
+								<label>Teléfono<span class="text-danger">*</span></label>
 								<input class="form-control" type="text" name="phone">
 							</div>
 						</div>
 						<div class="col-lg-6">
-							<label>Company<span class="text-danger">*</span></label>
+							<label>Compañía<span class="text-danger">*</span></label>
 							<input class="form-control" type="text" name="company">
 						</div>
 					</div>
@@ -60,12 +59,12 @@
 					<div class="row">
 						<div class="col-lg-6">
 							<div class="form-group">
-								<label>Address <span class="text-danger">*</span></label>
+								<label>Dirección <span class="text-danger">*</span></label>
 								<input type="text" name="address" class="form-control">
 							</div>
 						</div>
 						<div class="col-lg-6">
-							<label>Product</label>
+							<label>Producto</label>
 							<input type="text" name="product" class="form-control">
 						</div>
 					</div>
@@ -73,18 +72,17 @@
 				<div class="service-fields mb-3">
 					<div class="row">
 						<div class="col-12">
-							<label>Comment</label>
+							<label>Comentario</label>
 							<textarea name="comment" class="form-control" cols="30" rows="10"></textarea>
 						</div>
 					</div>
 				</div>
 				
 				<div class="submit-section">
-					<button class="btn btn-primary submit-btn" type="submit" name="form_submit" value="submit">Submit</button>
+					<button class="btn btn-primary submit-btn" type="submit" name="form_submit" value="submit">Enviar</button>
 				</div>
 			</form>
-			<!-- /Add Medicine -->
-
+			<!-- /Agregar Proveedor -->
 
 			</div>
 		</div>
@@ -93,8 +91,7 @@
 @endsection	
 
 @push('page-js')
-	<!-- Datetimepicker JS -->
+	<!-- JS del Selector de Fecha y Hora -->
 	<script src="{{asset('assets/js/moment.min.js')}}"></script>
 	<script src="{{asset('assets/js/bootstrap-datetimepicker.min.js')}}"></script>	
 @endpush
-

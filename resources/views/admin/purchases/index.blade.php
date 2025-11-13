@@ -8,14 +8,14 @@
 
 @push('page-header')
 <div class="col-sm-7 col-auto">
-	<h3 class="page-title">Purchase</h3>
+	<h3 class="page-title">Compras</h3>
 	<ul class="breadcrumb">
-		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Dashboard</a></li>
-		<li class="breadcrumb-item active">Purchase</li>
+		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Panel</a></li>
+		<li class="breadcrumb-item active">Compras</li>
 	</ul>
 </div>
 <div class="col-sm-5 col">
-	<a href="{{route('purchases.create')}}" class="btn btn-primary float-right mt-2">Add New</a>
+	<a href="{{route('purchases.create')}}" class="btn btn-primary float-right mt-2">Agregar nueva</a>
 </div>
 @endpush
 
@@ -23,30 +23,30 @@
 <div class="row">
 	<div class="col-md-12">
 	
-		<!-- Recent Orders -->
+		<!-- Compras recientes -->
 		<div class="card">
 			<div class="card-body">
 				<div class="table-responsive">
 					<table id="purchase-table" class="datatable table table-hover table-center mb-0">
 						<thead>
 							<tr>
-								<th>Medicine Name</th>
-								<th>Category</th>
-								<th>Supplier</th>
-								<th>Purchase Cost</th>
-								<th>Quantity</th>
-								<th>Expire Date</th>
-								<th class="action-btn">Action</th>
+								<th>Nombre del medicamento</th>
+								<th>Categoría</th>
+								<th>Proveedor</th>
+								<th>Costo de compra</th>
+								<th>Cantidad</th>
+								<th>Fecha de vencimiento</th>
+								<th class="action-btn">Acción</th>
 							</tr>
 						</thead>
 						<tbody>
-														
+														 
 						</tbody>
 					</table>
 				</div>
 			</div>
 		</div>
-		<!-- /Recent Orders -->
+		<!-- /Compras recientes -->
 		
 	</div>
 </div>

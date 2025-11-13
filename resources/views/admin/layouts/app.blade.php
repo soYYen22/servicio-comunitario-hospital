@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -92,6 +92,7 @@
 <script src="{{asset('assets/plugins/select2/js/select2.min.js')}}"></script>
 <!-- Custom JS -->
 <script src="{{asset('assets/js/script.js')}}"></script>
+
 <script>
     $(document).ready(function(){
         $('body').on('click','#deletebtn',function(){
@@ -99,15 +100,15 @@
             var route = $(this).data('route');
             swal.queue([
                 {
-                    title: "Are you sure?",
-                    text: "You won't be able to revert this!",
+                    title: "¿Estás seguro?",
+                    text: "¡No podrás revertir esta acción!",
                     type: "warning",
-                    showCancelButton: !0,
-                    confirmButtonText: '<i class="fe fe-trash mr-1"></i> Delete!',
-                    cancelButtonText: '<i class="fa fa-times mr-1"></i> Cancel!',
+                    showCancelButton: true,
+                    confirmButtonText: '<i class="fe fe-trash mr-1"></i> ¡Sí, eliminar!',
+                    cancelButtonText: '<i class="fa fa-times mr-1"></i> Cancelar',
                     confirmButtonClass: "btn btn-success mt-2",
                     cancelButtonClass: "btn btn-danger ml-2 mt-2",
-                    buttonsStyling: !1,
+                    buttonsStyling: false,
                     preConfirm: function(){
                         return new Promise(function(){
                             $.ajax({
@@ -117,23 +118,23 @@
                                 success: function(){
                                     swal.insertQueueStep(
                                         Swal.fire({
-                                            title: "Deleted!",
-                                            text: "Resource has been deleted.",
+                                            title: "¡Eliminado!",
+                                            text: "El recurso ha sido eliminado correctamente.",
                                             type: "success",
-                                            showConfirmButton: !1,
+                                            showConfirmButton: false,
                                             timer: 1500,
                                         })
                                     )
                                     $('.datatable').DataTable().ajax.reload();
                                 }
                             })
-
                         })
                     }
                 }
             ]).catch(swal.noop);
         }); 
     });
+
     @if(Session::has('message'))
         var type = "{{ Session::get('alert-type', 'info') }}";
         switch(type){
@@ -174,6 +175,7 @@
         }
     @endif
 </script>
+
 <!-- Page JS -->
 @stack('page-js')
 </html>
