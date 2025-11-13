@@ -33,9 +33,9 @@
                                 <tr>
                                     <th>Nombre del medicamento</th>
                                     <th>Categoría</th>
-                                    <th>Proveedor</th>
                                     <th>Costo de compra</th>
                                     <th>Cantidad</th>
+                                    <th>Proveedor</th>
                                     <th>Fecha de vencimiento</th>
                                 </tr>
                             </thead>
