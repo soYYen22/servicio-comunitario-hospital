@@ -178,7 +178,9 @@ class ProductController extends Controller
     public function expired(Request $request){
         $title = "expired Products";
         if($request->ajax()){
-            $products = Purchase::whereDate('expiry_date', '<=', Carbon::now())->get();
+            $products = Product::whereHas('purchase', function($q){
+                $q->whereDate('expiry_date', '<=', Carbon::now());
+            })->get();
             return DataTables::of($products)
                 ->addColumn('product',function($product){
                     $image = '';
@@ -192,7 +194,6 @@ class ProductController extends Controller
                         return $product->purchase->product. ' ' . $image;
                     }
                 })
-
                 ->addColumn('category',function($product){
                     $category = null;
                     if(!empty($product->purchase->category)){
@@ -201,7 +202,6 @@ class ProductController extends Controller
                     return $category;
                 })
                 ->addColumn('price',function($product){
-                    // format: no trailing .00, keep decimals when needed
                     $v = $product->price;
                     return (floor($v) == $v) ? (int)$v : rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
                 })

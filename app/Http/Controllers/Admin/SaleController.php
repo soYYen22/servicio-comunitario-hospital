@@ -210,7 +210,7 @@ class SaleController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function reports(Request $request){
-        $title = 'sales reports';
+        $title = 'reportes de Salidas';
         return view('admin.sales.reports',compact(
             'title'
         ));
@@ -227,7 +227,7 @@ class SaleController extends Controller
             'from_date' => 'required',
             'to_date' => 'required',
         ]);
-        $title = 'sales reports';
+        $title = 'Reportes de Salidas';
         $sales = Sale::whereBetween(DB::raw('DATE(created_at)'), array($request->from_date, $request->to_date))->get();
         return view('admin.sales.reports',compact(
             'sales','title'
