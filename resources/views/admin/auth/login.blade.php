@@ -24,10 +24,10 @@
 <!-- /Form -->
 
 <div class="text-center forgotpass">
-    <a href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a>
+    <a href="{{ route('password.request') }}"></a>
 </div>
 
 <div class="text-center dont-have">
-    ¿No tenés una cuenta? <a href="{{ route('register') }}">Registrate</a>
+     <a href="{{ route('register') }}"></a>
 </div>
 @endsection

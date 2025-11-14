@@ -8,10 +8,10 @@
 
 @push('page-header')
 <div class="col-sm-7 col-auto">
-	<h3 class="page-title">Compras</h3>
+	<h3 class="page-title">Entradas</h3>
 	<ul class="breadcrumb">
 		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Panel</a></li>
-		<li class="breadcrumb-item active">Compras</li>
+		<li class="breadcrumb-item active">Entradas</li>
 	</ul>
 </div>
 <div class="col-sm-5 col">

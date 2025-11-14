@@ -31,11 +31,11 @@
 				
 				@can('view-purchase')
 				<li class="submenu">
-					<a href="#"><i class="fe fe-star-o"></i> <span> Compras</span> <span class="menu-arrow"></span></a>
+					<a href="#"><i class="fe fe-star-o"></i> <span> Entradas</span> <span class="menu-arrow"></span></a>
 					<ul style="display: none;">
-						<li><a class="{{ route_is('purchases.*') ? 'active' : '' }}" href="{{route('purchases.index')}}">Compras</a></li>
+						<li><a class="{{ route_is('purchases.*') ? 'active' : '' }}" href="{{route('purchases.index')}}">Entradas</a></li>
 						@can('create-purchase')
-						<li><a class="{{ route_is('purchases.create') ? 'active' : '' }}" href="{{route('purchases.create')}}">Agregar Compra</a></li>
+						<li><a class="{{ route_is('purchases.create') ? 'active' : '' }}" href="{{route('purchases.create')}}">Agregar Entrada</a></li>
 						@endcan
 					</ul>
 				</li>
@@ -43,11 +43,11 @@
 
 				@can('view-sales')
 				<li class="submenu">
-					<a href="#"><i class="fe fe-activity"></i> <span> Ventas</span> <span class="menu-arrow"></span></a>
+					<a href="#"><i class="fe fe-activity"></i> <span> Salidas</span> <span class="menu-arrow"></span></a>
 					<ul style="display: none;">
-						<li><a class="{{ route_is('sales.*') ? 'active' : '' }}" href="{{route('sales.index')}}">Ventas</a></li>
+						<li><a class="{{ route_is('sales.*') ? 'active' : '' }}" href="{{route('sales.index')}}">Salidas</a></li>
 						@can('create-sale')
-						<li><a class="{{ route_is('sales.create') ? 'active' : '' }}" href="{{route('sales.create')}}">Agregar Venta</a></li>
+						<li><a class="{{ route_is('sales.create') ? 'active' : '' }}" href="{{route('sales.create')}}">Agregar Salidas</a></li>
 						@endcan
 					</ul>
 				</li>
@@ -67,8 +67,8 @@
 				<li class="submenu">
 					<a href="#"><i class="fe fe-document"></i> <span> Reportes</span> <span class="menu-arrow"></span></a>
 					<ul style="display: none;">
-						<li><a class="{{ route_is('sales.report') ? 'active' : '' }}" href="{{route('sales.report')}}">Reporte de Ventas</a></li>
-						<li><a class="{{ route_is('purchases.report') ? 'active' : '' }}" href="{{route('purchases.report')}}">Reporte de Compras</a></li>
+						<li><a class="{{ route_is('sales.report') ? 'active' : '' }}" href="{{route('sales.report')}}">Reporte de Salida</a></li>
+						<li><a class="{{ route_is('purchases.report') ? 'active' : '' }}" href="{{route('purchases.report')}}">Reporte de Entrada</a></li>
 					</ul>
 				</li>
 				@endcan

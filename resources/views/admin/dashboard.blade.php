@@ -103,7 +103,7 @@
     <div class="col-md-12 col-lg-6">
         <div class="card card-table p-3">
             <div class="card-header">
-                <h4 class="card-title ">Ventas de Hoy</h4>
+                <h4 class="card-title ">Salidas de Hoy</h4>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
