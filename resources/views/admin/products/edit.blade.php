@@ -51,12 +51,7 @@
 								</div>
 							</div>
 	
-							<div class="col-lg-6">
-								<div class="form-group">
-									<label>Descuento (%)<span class="text-danger">*</span></label>
-									<input class="form-control" value="{{$product->discount}}" type="text" name="discount" value="{{old('discount')}}">
-								</div>
-							</div>
+							<!-- Descuento eliminado -->
 							
 						</div>
 					</div>

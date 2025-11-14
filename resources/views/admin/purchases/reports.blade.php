@@ -33,7 +33,7 @@
                                 <tr>
                                     <th>Nombre del medicamento</th>
                                     <th>Categoría</th>
-                                    <th>Costo de compra</th>
+                                    <!-- Costo de compra eliminado -->
                                     <th>Cantidad</th>
                                     <th>Proveedor</th>
                                     <th>Fecha de vencimiento</th>
@@ -54,7 +54,7 @@
                                         </h2>
                                     </td>
                                     <td>{{$purchase->category->name}}</td>
-                                    <td>{{ (floor($purchase->price) == $purchase->price) ? intval($purchase->price) : rtrim(rtrim(number_format($purchase->price, 2, '.', ''), '0'), '.') }}</td>
+                                    <!-- Costo de compra eliminado -->
                                     <td>{{$purchase->quantity}}</td>
                                     <td>{{$purchase->supplier->name}}</td>
                                     <td>{{date_format(date_create($purchase->expiry_date),"d M, Y")}}</td>

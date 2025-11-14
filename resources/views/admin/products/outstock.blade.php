@@ -31,7 +31,7 @@
 								<th>Categoría</th>
 								<th>Precio</th>
 								<th>Cantidad</th>
-								<th>Descuento</th>
+								<!-- Descuento eliminado -->
 								<th>Fecha de vencimiento</th>
 								<th class="action-btn">Acción</th>
 							</tr>
@@ -62,7 +62,7 @@
                 {data: 'category', name: 'category'},
                 {data: 'price', name: 'price'},
                 {data: 'quantity', name: 'quantity'},
-                {data: 'discount', name: 'discount'},
+				// Descuento eliminado
 				{data: 'expiry_date', name: 'expiry_date'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]

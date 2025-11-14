@@ -33,7 +33,7 @@
 								<th>Nombre del medicamento</th>
 								<th>Categoría</th>
 								<th>Proveedor</th>
-								<th>Costo de compra</th>
+								<!-- Costo de compra eliminado -->
 								<th>Cantidad</th>
 								<th>Fecha de vencimiento</th>
 								<th class="action-btn">Acción</th>
@@ -63,7 +63,7 @@
                 {data: 'product', name: 'product'},
                 {data: 'category', name: 'category'},
                 {data: 'supplier', name: 'supplier'},
-                {data: 'cost_price', name: 'cost_price'},
+				// Costo de compra eliminado
                 {data: 'quantity', name: 'quantity'},
 				{data: 'expiry_date', name: 'expiry_date'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
