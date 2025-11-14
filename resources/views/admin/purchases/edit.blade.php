@@ -57,12 +57,7 @@
 				
 				<div class="service-fields mb-3">
 					<div class="row">
-						<div class="col-lg-6">
-							<div class="form-group">
-								<label>Precio de costo <span class="text-danger">*</span></label>
-								<input class="form-control" value="{{ (floor($purchase->cost_price) == $purchase->cost_price) ? (int)$purchase->cost_price : rtrim(rtrim(number_format($purchase->cost_price, 2, '.', ''), '0'), '.') }}" type="text" name="cost_price">
-							</div>
-						</div>
+						<!-- Precio de costo eliminado -->
 						<div class="col-lg-6">
 							<div class="form-group">
 								<label>Cantidad <span class="text-danger">*</span></label>

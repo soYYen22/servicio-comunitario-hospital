@@ -105,18 +105,12 @@ class ProductController extends Controller
     {
         $this->validate($request,[
             'product'=>'required|max:200',
-            'price'=>'required|min:1',
-            'discount'=>'nullable',
+            'price'=>'required|numeric',
             'description'=>'nullable|max:255',
         ]);
-        $price = $request->price;
-        if($request->discount >0){
-           $price = $request->discount * $request->price;
-        }
         Product::create([
             'purchase_id'=>$request->product,
-            'price'=>$price,
-            'discount'=>$request->discount,
+            'price'=> (float) $request->price,
             'description'=>$request->description,
         ]);
         $notification = notify("Se ha añadido el producto.");
@@ -150,19 +144,13 @@ class ProductController extends Controller
     {
         $this->validate($request,[
             'product'=>'required|max:200',
-            'price'=>'required',
-            'discount'=>'nullable',
+            'price'=>'required|numeric',
             'description'=>'nullable|max:255',
         ]);
 
-        $price = $request->price;
-        if($request->discount >0){
-           $price = $request->discount * $request->price;
-        }
        $product->update([
             'purchase_id'=>$request->product,
-            'price'=>$price,
-            'discount'=>$request->discount,
+            'price'=> (float) $request->price,
             'description'=>$request->description,
         ]);
         $notification = notify('El producto ha sido actualizado.');

@@ -10,8 +10,7 @@ class Product extends Model
 {
     use HasFactory,SoftDeletes;
     protected $fillable = [
-        'purchase_id','price',
-        'discount','description',
+        'purchase_id','price','description',
     ];
 
     public function purchase(){

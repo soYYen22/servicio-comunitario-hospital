@@ -39,11 +39,7 @@ class PurchaseController extends Controller
                         return $purchase->category->name;
                     }
                 })
-                ->addColumn('cost_price',function($purchase){
-                    // format: no trailing .00, keep decimals when needed
-                    $v = $purchase->cost_price;
-                    return (floor($v) == $v) ? (int)$v : rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
-                })
+                // cost_price column removed
                 ->addColumn('supplier',function($purchase){
                     return $purchase->supplier->name;
                 })
@@ -96,7 +92,6 @@ class PurchaseController extends Controller
         $this->validate($request,[
             'product'=>'required|max:200',
             'category'=>'required',
-            'cost_price'=>'required|min:1',
             'quantity'=>'required|min:1',
             'expiry_date'=>'required',
             'supplier'=>'required',
@@ -111,7 +106,6 @@ class PurchaseController extends Controller
             'product'=>$request->product,
             'category_id'=>$request->category,
             'supplier_id'=>$request->supplier,
-            'cost_price'=>$request->cost_price,
             'quantity'=>$request->quantity,
             'expiry_date'=>$request->expiry_date,
             'image'=>$imageName,
@@ -150,7 +144,6 @@ class PurchaseController extends Controller
         $this->validate($request,[
             'product'=>'required|max:200',
             'category'=>'required',
-            'cost_price'=>'required|min:1',
             'quantity'=>'required|min:1',
             'expiry_date'=>'required',
             'supplier'=>'required',
@@ -165,7 +158,6 @@ class PurchaseController extends Controller
             'product'=>$request->product,
             'category_id'=>$request->category,
             'supplier_id'=>$request->supplier,
-            'cost_price'=>$request->cost_price,
             'quantity'=>$request->quantity,
             'expiry_date'=>$request->expiry_date,
             'image'=>$imageName,

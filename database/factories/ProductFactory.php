@@ -25,7 +25,6 @@ class ProductFactory extends Factory
         return [
             'purchase_id' => Purchase::factory(),
             'price' => random_int(10,200),
-            'discount' => 0,
             'description' => $this->faker->paragraph(),
         ];
     }

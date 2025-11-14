@@ -112,7 +112,7 @@ class SaleController extends Controller
             /**
              * calcualting item's total price
             **/
-            $total_price = ($request->quantity) * ($sold_product->price);
+            $total_price = (float) $request->quantity * (float) $sold_product->price;
             Sale::create([
                 'product_id'=>$request->product,
                 'quantity'=>$request->quantity,
@@ -182,7 +182,7 @@ class SaleController extends Controller
              * calcualting item's total price
             **/
             if(!empty($request->quantity)){
-                $total_price = ($request->quantity) * ($sold_product->price);
+                $total_price = (float) $request->quantity * (float) $sold_product->price;
             }
             $total_price = $sale->total_price;
             $sale->update([
