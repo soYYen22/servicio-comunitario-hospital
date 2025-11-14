@@ -45,7 +45,9 @@ class ProductController extends Controller
                     return $category;
                 })
                 ->addColumn('price',function($product){
-                    return settings('app_currency','$').' '. $product->price;
+                    // format: no trailing .00, keep decimals when needed
+                    $v = $product->price;
+                    return (floor($v) == $v) ? (int)$v : rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
                 })
                 ->addColumn('quantity',function($product){
                     if(!empty($product->purchase)){
@@ -117,7 +119,7 @@ class ProductController extends Controller
             'discount'=>$request->discount,
             'description'=>$request->description,
         ]);
-        $notification = notify("Product has been added");
+        $notification = notify("Se ha añadido el producto.");
         return redirect()->route('products.index')->with($notification);
     }
 
@@ -163,7 +165,7 @@ class ProductController extends Controller
             'discount'=>$request->discount,
             'description'=>$request->description,
         ]);
-        $notification = notify('product has been updated');
+        $notification = notify('El producto ha sido actualizado.');
         return redirect()->route('products.index')->with($notification);
     }
 
@@ -199,7 +201,9 @@ class ProductController extends Controller
                     return $category;
                 })
                 ->addColumn('price',function($product){
-                    return settings('app_currency','$').' '. $product->price;
+                    // format: no trailing .00, keep decimals when needed
+                    $v = $product->price;
+                    return (floor($v) == $v) ? (int)$v : rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
                 })
                 ->addColumn('quantity',function($product){
                     if(!empty($product->purchase)){
@@ -266,7 +270,9 @@ class ProductController extends Controller
                     return $category;
                 })
                 ->addColumn('price',function($product){
-                    return settings('app_currency','$').' '. $product->price;
+                    // format: no trailing .00, keep decimals when needed
+                    $v = $product->price;
+                    return (floor($v) == $v) ? (int)$v : rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
                 })
                 ->addColumn('quantity',function($product){
                     if(!empty($product->purchase)){

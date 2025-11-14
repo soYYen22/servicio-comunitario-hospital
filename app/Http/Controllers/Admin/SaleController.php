@@ -39,7 +39,9 @@ class SaleController extends Controller
                         }                 
                     })
                     ->addColumn('total_price',function($sale){                   
-                        return settings('app_currency','$').' '. $sale->total_price;
+                        // format: no trailing .00, keep decimals when needed
+                        $v = $sale->total_price;
+                        return (floor($v) == $v) ? (int)$v : rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
                     })
                     ->addColumn('date',function($row){
                         return date_format(date_create($row->created_at),'d M, Y');
@@ -117,14 +119,14 @@ class SaleController extends Controller
                 'total_price'=>$total_price,
             ]);
 
-            $notification = notify("Product has been sold");
+            $notification = notify("El Producto Ha Salido.");
         } 
         if($new_quantity <=1 && $new_quantity !=0){
             // send notification 
             $product = Purchase::where('quantity', '<=', 1)->first();
             event(new PurchaseOutStock($product));
             // end of notification 
-            $notification = notify("Product is running out of stock!!!");
+            $notification = notify("¡El producto se está agotando!");
             
         }
 
@@ -189,14 +191,14 @@ class SaleController extends Controller
                 'total_price'=>$total_price,
             ]);
 
-            $notification = notify("Product has been updated");
+            $notification = notify("El producto ha sido actualizado.");
         } 
         if($new_quantity <=1 && $new_quantity !=0){
             // send notification 
             $product = Purchase::where('quantity', '<=', 1)->first();
             event(new PurchaseOutStock($product));
             // end of notification 
-            $notification = notify("Product is running out of stock!!!");
+            $notification = notify("¡El producto se está agotando!");
             
         }
         return redirect()->route('sales.index')->with($notification);

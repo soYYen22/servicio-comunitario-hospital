@@ -54,7 +54,7 @@
                                         </h2>
                                     </td>
                                     <td>{{$purchase->category->name}}</td>
-                                    <td>{{AppSettings::get('app_currency', '$')}}{{$purchase->price}}</td>
+                                    <td>{{ (floor($purchase->price) == $purchase->price) ? intval($purchase->price) : rtrim(rtrim(number_format($purchase->price, 2, '.', ''), '0'), '.') }}</td>
                                     <td>{{$purchase->quantity}}</td>
                                     <td>{{$purchase->supplier->name}}</td>
                                     <td>{{date_format(date_create($purchase->expiry_date),"d M, Y")}}</td>

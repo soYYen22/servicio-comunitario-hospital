@@ -40,7 +40,9 @@ class PurchaseController extends Controller
                     }
                 })
                 ->addColumn('cost_price',function($purchase){
-                    return settings('app_currency','$'). ' '. $purchase->cost_price;
+                    // format: no trailing .00, keep decimals when needed
+                    $v = $purchase->cost_price;
+                    return (floor($v) == $v) ? (int)$v : rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
                 })
                 ->addColumn('supplier',function($purchase){
                     return $purchase->supplier->name;
@@ -114,7 +116,7 @@ class PurchaseController extends Controller
             'expiry_date'=>$request->expiry_date,
             'image'=>$imageName,
         ]);
-        $notifications = notify("Purchase has been added");
+        $notifications = notify("Se ha añadido la Entrada");
         return redirect()->route('purchases.index')->with($notifications);
     }
 
@@ -168,7 +170,7 @@ class PurchaseController extends Controller
             'expiry_date'=>$request->expiry_date,
             'image'=>$imageName,
         ]);
-        $notifications = notify("Purchase has been updated");
+        $notifications = notify("Entrada Actualizada");
         return redirect()->route('purchases.index')->with($notifications);
     }
 

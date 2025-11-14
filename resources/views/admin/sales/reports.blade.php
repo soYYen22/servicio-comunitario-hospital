@@ -50,7 +50,7 @@
                                                 @endif
                                             </td>
                                             <td>{{$sale->quantity}}</td>
-                                            <td>{{AppSettings::get('app_currency', '$')}} {{($sale->total_price)}}</td>
+											<td>{{ (floor($sale->total_price) == $sale->total_price) ? intval($sale->total_price) : rtrim(rtrim(number_format($sale->total_price, 2, '.', ''), '0'), '.') }}</td>
                                             <td>{{date_format(date_create($sale->created_at),"d M, Y")}}</td>
                                         </tr>
                                     @endif

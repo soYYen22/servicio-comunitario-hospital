@@ -47,7 +47,7 @@
 							<div class="col-lg-6">
 								<div class="form-group">
 									<label>Precio de venta <span class="text-danger">*</span></label>
-									<input class="form-control" type="text" name="price" value="{{$product->price}}">
+									<input class="form-control" type="text" name="price" value="{{ (floor($product->price) == $product->price) ? (int)$product->price : rtrim(rtrim(number_format($product->price, 2, '.', ''), '0'), '.') }}">
 								</div>
 							</div>
 	

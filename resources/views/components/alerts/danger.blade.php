@@ -5,5 +5,5 @@
 	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 		<span aria-hidden="true">&times;</span>
 	</button>
-	<strong>Oh snap!</strong> {{$error}}
+	<strong>Campo obligatorio!</strong> {{$error}}
 </div>

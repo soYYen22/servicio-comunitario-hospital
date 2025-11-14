@@ -30,7 +30,7 @@ return [
                     'class' => 'form-control',
                     'style' => '', // estilos en línea
                     'rules' => 'required|max:10', // validación
-                    'value' => '$', // valor por defecto
+                    'value' => '', // valor por defecto (sin símbolo)
                     'hint' => 'Usa el símbolo de tu moneda, por ejemplo $',
                 ],
                 [

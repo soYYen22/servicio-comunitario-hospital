@@ -25,7 +25,7 @@
                         <i class="fe fe-money"></i>
                     </span>
                     <div class="dash-count">
-                        <h3>{{AppSettings::get('app_currency', '$')}} {{$today_sales}}</h3>
+                        <h3>{{ (floor($today_sales) == $today_sales) ? intval($today_sales) : rtrim(rtrim(number_format($today_sales, 2, '.', ''), '0'), '.') }}</h3>
                     </div>
                 </div>
                 <div class="dash-widget-info">

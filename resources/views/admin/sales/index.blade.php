@@ -16,7 +16,7 @@
 </div>
 @can('create-sale')
 <div class="col-sm-5 col">
-	<a href="{{route('sales.create')}}" class="btn btn-primary float-right mt-2">Agregar Venta</a>
+	<a href="{{route('sales.create')}}" class="btn btn-primary float-right mt-2">Agregar Salida</a>
 </div>
 @endcan
 @endpush
