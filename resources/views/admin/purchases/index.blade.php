@@ -33,6 +33,7 @@
 								<th>Nombre del medicamento</th>
 								<th>Categoría</th>
 								<th>Proveedor</th>
+								<th>Lote</th>
 								<!-- Costo de compra eliminado -->
 								<th>Cantidad</th>
 								<th>Fecha de vencimiento</th>
@@ -60,12 +61,13 @@
             serverSide: true,
             ajax: "{{route('purchases.index')}}",
             columns: [
-                {data: 'product', name: 'product'},
-                {data: 'category', name: 'category'},
-                {data: 'supplier', name: 'supplier'},
-				// Costo de compra eliminado
-                {data: 'quantity', name: 'quantity'},
-				{data: 'expiry_date', name: 'expiry_date'},
+					{data: 'product', name: 'product'},
+					{data: 'category', name: 'category'},
+					{data: 'supplier', name: 'supplier'},
+					{data: 'price', name: 'price'},
+					// Costo de compra eliminado
+					{data: 'quantity', name: 'quantity'},
+					{data: 'expiry_date', name: 'expiry_date'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });

@@ -30,12 +30,12 @@
                     <div class="table-responsive">
                         <table id="sales-table" class="datatable table table-hover table-center mb-0">
                             <thead>
-                                <tr>
-                                    <th>Nombre del Producto</th>
-                                    <th>Cantidad</th>
-                                    <th>Precio Total</th>
-                                    <th>Fecha</th>
-                                </tr>
+								<tr>
+									<th>Nombre del Producto</th>
+									<th>Cantidad</th>
+									<th>Lote</th>
+									<th>Fecha</th>
+								</tr>
                             </thead>
                             <tbody>
                                 @foreach ($sales as $sale)
@@ -49,8 +49,8 @@
                                                     </span>
                                                 @endif
                                             </td>
-                                            <td>{{$sale->quantity}}</td>
-											<td>{{ (floor($sale->total_price) == $sale->total_price) ? intval($sale->total_price) : rtrim(rtrim(number_format($sale->total_price, 2, '.', ''), '0'), '.') }}</td>
+											<td>{{$sale->quantity}}</td>
+											<td>{{ isset($sale->product) && isset($sale->product->price) ? ((floor($sale->product->price) == $sale->product->price) ? intval($sale->product->price) : rtrim(rtrim(number_format($sale->product->price, 2, '.', ''), '0'), '.')) : '' }}</td>
                                             <td>{{date_format(date_create($sale->created_at),"d M, Y")}}</td>
                                         </tr>
                                     @endif

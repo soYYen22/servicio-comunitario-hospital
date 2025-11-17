@@ -57,13 +57,20 @@
 				
 				<div class="service-fields mb-3">
 					<div class="row">
-						<!-- Precio de costo eliminado -->
-						<div class="col-lg-6">
-							<div class="form-group">
-								<label>Cantidad <span class="text-danger">*</span></label>
-								<input class="form-control" value="{{$purchase->quantity}}" type="text" name="quantity">
+							<!-- Precio de costo -->
+							<div class="col-lg-6">
+								<div class="form-group">
+									<label>Precio <span class="text-danger">*</span></label>
+									<input class="form-control" value="{{ isset($purchase->cost_price) ? $purchase->cost_price : old('cost_price') }}" type="text" name="cost_price">
+								</div>
 							</div>
-						</div>
+
+							<div class="col-lg-6">
+								<div class="form-group">
+									<label>Cantidad <span class="text-danger">*</span></label>
+									<input class="form-control" value="{{$purchase->quantity}}" type="text" name="quantity">
+								</div>
+							</div>
 					</div>
 				</div>
 

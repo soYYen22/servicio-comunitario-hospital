@@ -34,7 +34,7 @@
 							<tr>
 								<th>Nombre del Producto</th>
 								<th>Cantidad</th>
-								<th>Precio Total</th>
+								<th>Lote</th>
 								<th>Fecha</th>
 								<th class="action-btn">Acción</th>
 							</tr>
@@ -61,10 +61,10 @@
             serverSide: true,
             ajax: "{{route('sales.index')}}",
             columns: [
-                {data: 'product', name: 'product'},
-                {data: 'quantity', name: 'quantity'},
-                {data: 'total_price', name: 'total_price'},
-				{data: 'date', name: 'date'},
+				{data: 'product', name: 'product'},
+				{data: 'quantity', name: 'quantity'},
+				{data: 'price', name: 'price'},
+					{data: 'date', name: 'date'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });

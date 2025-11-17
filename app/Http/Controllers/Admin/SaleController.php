@@ -23,8 +23,8 @@ class SaleController extends Controller
     {
         $title = 'sales';
         if($request->ajax()){
-            $sales = Sale::latest();
-            return DataTables::of($sales)
+                $sales = Sale::with('product')->latest();
+                return DataTables::of($sales)
                     ->addIndexColumn()
                     ->addColumn('product',function($sale){
                         $image = '';
@@ -37,6 +37,13 @@ class SaleController extends Controller
                             }
                             return $sale->product->purchase->product. ' ' . $image;
                         }                 
+                    })
+                    ->addColumn('price', function($sale){
+                        if(!empty($sale->product) && isset($sale->product->price)){
+                            $v = $sale->product->price;
+                            return (floor($v) == $v) ? (int)$v : rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
+                        }
+                        return '';
                     })
                     ->addColumn('total_price',function($sale){                   
                         // format: no trailing .00, keep decimals when needed

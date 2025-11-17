@@ -32,7 +32,7 @@
 							<tr>
 								<th>Nombre del producto</th>
 								<th>Categoría</th>
-								<th>Precio</th>
+								<th>Lote</th>
 								<th>Cantidad</th>
 								<!-- Descuento eliminado -->
 								<th>Fecha de vencimiento</th>

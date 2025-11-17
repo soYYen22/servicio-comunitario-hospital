@@ -11,7 +11,7 @@ class Purchase extends Model
 
     protected $fillable = [
         'product','category_id','supplier_id',
-        'quantity','expiry_date',
+        'cost_price','quantity','expiry_date',
         'image'
     ];
 

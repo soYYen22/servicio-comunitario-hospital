@@ -112,7 +112,7 @@
                             <tr>
                                 <th>Medicamento</th>
                                 <th>Cantidad</th>
-                                <th>Precio Total</th>
+                                <th>Lote</th>
                                 <th>Fecha</th>
                             </tr>
                         </thead>
@@ -149,11 +149,11 @@
             processing: true,
             serverSide: true,
             ajax: "{{route('sales.index')}}",
-            columns: [
+                columns: [
                 {data: 'product', name: 'product'},
                 {data: 'quantity', name: 'quantity'},
-                {data: 'total_price', name: 'total_price'},
-				{data: 'date', name: 'date'},
+                {data: 'price', name: 'price'},
+                {data: 'date', name: 'date'},
             ]
         });
     });

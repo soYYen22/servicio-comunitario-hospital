@@ -23,7 +23,7 @@ class PurchaseController extends Controller
     {
         $title = 'purchases';
         if($request->ajax()){
-            $purchases = Purchase::get();
+            $purchases = Purchase::with('purchaseProduct','category','supplier')->get();
             return DataTables::of($purchases)
                 ->addColumn('product',function($purchase){
                     $image = '';
@@ -38,6 +38,19 @@ class PurchaseController extends Controller
                     if(!empty($purchase->category)){
                         return $purchase->category->name;
                     }
+                })
+                ->addColumn('price', function($purchase){
+                    // Prefer product price from related Product (same as Products list)
+                    if(!empty($purchase->purchaseProduct) && isset($purchase->purchaseProduct->price)){
+                        $v = $purchase->purchaseProduct->price;
+                        return (floor($v) == $v) ? (int)$v : rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
+                    }
+                    // Fallback to cost_price if product price is not available
+                    if(isset($purchase->cost_price)){
+                        $v = $purchase->cost_price;
+                        return (floor($v) == $v) ? (int)$v : rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
+                    }
+                    return '';
                 })
                 // cost_price column removed
                 ->addColumn('supplier',function($purchase){
@@ -95,6 +108,7 @@ class PurchaseController extends Controller
             'quantity'=>'required|min:1',
             'expiry_date'=>'required',
             'supplier'=>'required',
+            'cost_price'=>'nullable|numeric',
             'image'=>'file|image|mimes:jpg,jpeg,png,gif',
         ]);
         $imageName = null;
@@ -106,6 +120,7 @@ class PurchaseController extends Controller
             'product'=>$request->product,
             'category_id'=>$request->category,
             'supplier_id'=>$request->supplier,
+            'cost_price'=>$request->cost_price,
             'quantity'=>$request->quantity,
             'expiry_date'=>$request->expiry_date,
             'image'=>$imageName,
@@ -147,6 +162,7 @@ class PurchaseController extends Controller
             'quantity'=>'required|min:1',
             'expiry_date'=>'required',
             'supplier'=>'required',
+            'cost_price'=>'nullable|numeric',
             'image'=>'file|image|mimes:jpg,jpeg,png,gif',
         ]);
         $imageName = $purchase->image;
@@ -158,6 +174,7 @@ class PurchaseController extends Controller
             'product'=>$request->product,
             'category_id'=>$request->category,
             'supplier_id'=>$request->supplier,
+            'cost_price'=>$request->cost_price,
             'quantity'=>$request->quantity,
             'expiry_date'=>$request->expiry_date,
             'image'=>$imageName,

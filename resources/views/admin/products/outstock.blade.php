@@ -29,7 +29,7 @@
 							<tr>
 								<th>Nombre de marca</th>
 								<th>Categoría</th>
-								<th>Precio</th>
+								<th>Lote</th>
 								<th>Cantidad</th>
 								<!-- Descuento eliminado -->
 								<th>Fecha de vencimiento</th>
