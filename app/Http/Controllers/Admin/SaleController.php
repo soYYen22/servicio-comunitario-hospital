@@ -170,44 +170,68 @@ class SaleController extends Controller
             'product'=>'required',
             'quantity'=>'required|integer|min:1'
         ]);
-        $sold_product = Product::find($request->product);
-        /**
-         * update quantity of sold item from purchases
-        **/
-        $purchased_item = Purchase::find($sold_product->purchase->id);
-        if(!empty($request->quantity)){
-            $new_quantity = ($purchased_item->quantity) - ($request->quantity);
-        }
-        $new_quantity = $sale->quantity;
+        $this->validate($request, [
+            'product' => 'required',
+            'quantity' => 'required|integer|min:1'
+        ]);
+
+        $newProduct = Product::find($request->product);
+        $oldProduct = $sale->product;
+
         $notification = '';
-        if (!($new_quantity < 0)){
-            $purchased_item->update([
-                'quantity'=>$new_quantity,
-            ]);
 
-            /**
-             * calcualting item's total price
-            **/
-            if(!empty($request->quantity)){
-                $total_price = (float) $request->quantity * (float) $sold_product->price;
+        $updated = DB::transaction(function() use ($sale, $oldProduct, $newProduct, $request, &$notification) {
+            $oldQty = (int) ($sale->quantity ?? 0);
+            $newQty = (int) $request->quantity;
+
+            // If product changed: restore old purchase stock, then deduct from new purchase
+            if (!empty($oldProduct) && $oldProduct->purchase) {
+                $oldPurchase = $oldProduct->purchase;
+                $oldPurchase->update([
+                    'quantity' => ($oldPurchase->quantity ?? 0) + $oldQty,
+                ]);
             }
-            $total_price = $sale->total_price;
-            $sale->update([
-                'product_id'=>$request->product,
-                'quantity'=>$request->quantity,
-                'total_price'=>$total_price,
+
+            if (empty($newProduct) || empty($newProduct->purchase)) {
+                throw new \Exception('Producto o compra asociada no encontrada.');
+            }
+
+            $newPurchase = $newProduct->purchase;
+
+            // Compute final quantity after applying the update: start from current purchase quantity
+            // Current purchase quantity already reflects previous sales, so add back oldQty only if product didn't change.
+            // Simpler and safe approach: set final = current + (oldProduct == newProduct ? oldQty : 0) - newQty
+            $finalQuantity = ($newPurchase->quantity ?? 0) - $newQty;
+
+            // If the product is the same as before, we've already restored oldQty above, so finalQuantity is correct.
+            // If the product changed, oldQty was restored to oldPurchase, and newPurchase does not include oldQty.
+            if ($finalQuantity < 0) {
+                throw new \Exception('Cantidad insuficiente en stock para la actualización.');
+            }
+
+            $newPurchase->update([
+                'quantity' => $finalQuantity,
             ]);
 
-            $notification = notify("El producto ha sido actualizado.");
-        } 
-        if($new_quantity <=1 && $new_quantity !=0){
-            // send notification 
-            $product = Purchase::where('quantity', '<=', 1)->first();
-            event(new PurchaseOutStock($product));
-            // end of notification 
-            $notification = notify("¡El producto se está agotando!");
-            
-        }
+            // Update sale
+            $total_price = (float) $newQty * (float) $newProduct->price;
+            $sale->update([
+                'product_id' => $newProduct->id,
+                'quantity' => $newQty,
+                'total_price' => $total_price,
+            ]);
+
+            if($finalQuantity <= 1 && $finalQuantity != 0){
+                $productLow = Purchase::where('quantity', '<=', 1)->first();
+                event(new PurchaseOutStock($productLow));
+                $notification = notify("¡El producto se está agotando!");
+            } else {
+                $notification = notify("El producto ha sido actualizado.");
+            }
+
+            return true;
+        });
+
         return redirect()->route('sales.index')->with($notification);
     }
 
@@ -250,6 +274,19 @@ class SaleController extends Controller
      */
     public function destroy(Request $request)
     {
-        return Sale::findOrFail($request->id)->delete();
+        $sale = Sale::with('product.purchase')->findOrFail($request->id);
+
+        $deleted = DB::transaction(function() use ($sale) {
+            if (!empty($sale->product) && !empty($sale->product->purchase)) {
+                $purchase = $sale->product->purchase;
+                $purchase->update([
+                    'quantity' => ($purchase->quantity ?? 0) + ($sale->quantity ?? 0),
+                ]);
+            }
+
+            return $sale->delete();
+        });
+
+        return response()->json(['success' => (bool) $deleted]);
     }
 }
