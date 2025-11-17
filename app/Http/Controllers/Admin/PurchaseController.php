@@ -108,7 +108,7 @@ class PurchaseController extends Controller
             'quantity'=>'required|min:1',
             'expiry_date'=>'required',
             'supplier'=>'required',
-            'cost_price'=>'nullable|numeric',
+            'lot'=>'nullable|numeric',
             'image'=>'file|image|mimes:jpg,jpeg,png,gif',
         ]);
         $imageName = null;
@@ -174,11 +174,17 @@ class PurchaseController extends Controller
             'product'=>$request->product,
             'category_id'=>$request->category,
             'supplier_id'=>$request->supplier,
-            'cost_price'=>$request->cost_price,
             'quantity'=>$request->quantity,
             'expiry_date'=>$request->expiry_date,
             'image'=>$imageName,
         ]);
+
+        // If a related Product exists, update its price field with the provided lote value
+        if($request->filled('lot') && $purchase->purchaseProduct){
+            $purchase->purchaseProduct()->update([
+                'price' => (float) $request->lot,
+            ]);
+        }
         $notifications = notify("Entrada Actualizada");
         return redirect()->route('purchases.index')->with($notifications);
     }

@@ -47,7 +47,17 @@
 							<div class="col-lg-6">
 								<div class="form-group">
 									<label>Precio de venta <span class="text-danger">*</span></label>
-									<input class="form-control" type="text" name="price" value="{{ old('price', isset($product) ? (float)$product->price : '') }}">
+									@php
+										$prodPrice = isset($product) ? (float)$product->price : null;
+										if(old('price') !== null){
+											$displayPrice = old('price');
+										} elseif($prodPrice !== null) {
+											$displayPrice = (floor($prodPrice) == $prodPrice) ? intval($prodPrice) : rtrim(rtrim(number_format($prodPrice, 2, '.', ''), '0'), '.');
+										} else {
+											$displayPrice = '';
+										}
+									@endphp
+									<input class="form-control" type="text" name="price" value="{{ $displayPrice }}">
 								</div>
 							</div>
 	

@@ -6,10 +6,10 @@
 
 @push('page-header')
 <div class="col-sm-12">
-	<h3 class="page-title">Editar compra</h3>
+	<h3 class="page-title">Editar Entrada</h3>
 	<ul class="breadcrumb">
 		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Panel</a></li>
-		<li class="breadcrumb-item active">Editar compra</li>
+		<li class="breadcrumb-item active">Editar Entrada</li>
 	</ul>
 </div>
 @endpush
@@ -60,8 +60,19 @@
 							<!-- Precio de costo -->
 							<div class="col-lg-6">
 								<div class="form-group">
-									<label>Precio <span class="text-danger">*</span></label>
-									<input class="form-control" value="{{ isset($purchase->cost_price) ? $purchase->cost_price : old('cost_price') }}" type="text" name="cost_price">
+									<label>Lote <span class="text-danger">*</span></label>
+									@php
+										$lotOld = old('lot');
+										$lotFromProduct = isset($purchase->purchaseProduct) && isset($purchase->purchaseProduct->price) ? (float)$purchase->purchaseProduct->price : null;
+										if($lotOld !== null) {
+											$displayLot = $lotOld;
+										} elseif($lotFromProduct !== null) {
+											$displayLot = (floor($lotFromProduct) == $lotFromProduct) ? intval($lotFromProduct) : rtrim(rtrim(number_format($lotFromProduct, 2, '.', ''), '0'), '.');
+										} else {
+											$displayLot = '';
+										}
+									@endphp
+									<input class="form-control" value="{{ $displayLot }}" type="text" name="lot">
 								</div>
 							</div>
 
