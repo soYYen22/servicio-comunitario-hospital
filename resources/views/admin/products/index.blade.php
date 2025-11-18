@@ -36,6 +36,7 @@
 								<th>Cantidad</th>
 								<!-- Descuento eliminado -->
 								<th>Fecha de vencimiento</th>
+                                <th>Fecha de entrada</th>
 								<th class="action-btn">Acción</th>
 							</tr>
 						</thead>
@@ -68,6 +69,7 @@
                 {data: 'quantity', name: 'quantity'},
 				// Descuento eliminado
 				{data: 'expiry_date', name: 'expiry_date'},
+					{data: 'entry_date', name: 'entry_date'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });

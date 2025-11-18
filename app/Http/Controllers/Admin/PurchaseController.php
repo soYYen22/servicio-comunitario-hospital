@@ -52,6 +52,9 @@ class PurchaseController extends Controller
                 ->addColumn('expiry_date',function($purchase){
                     return date_format(date_create($purchase->expiry_date),'d M, Y');
                 })
+                    ->addColumn('entry_date',function($purchase){
+                        return $purchase->entry_date ? date_format(date_create($purchase->entry_date),'d M, Y') : '';
+                    })
                 ->addColumn('action', function ($row) {
                     $editbtn = '<a href="'.route("purchases.edit", $row->id).'" class="editbtn"><button class="btn btn-primary"><i class="fas fa-edit"></i></button></a>';
                     $deletebtn = '<a data-id="'.$row->id.'" data-route="'.route('purchases.destroy', $row->id).'" href="javascript:void(0)" id="deletebtn"><button class="btn btn-danger"><i class="fas fa-trash"></i></button></a>';
@@ -95,28 +98,32 @@ class PurchaseController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
-            'product'=>'required|max:200',
-            'category'=>'required',
-            'quantity'=>'required|min:1',
-            'expiry_date'=>'required',
-            'supplier'=>'required',
-            'lot'=>'nullable|numeric',
-            'image'=>'file|image|mimes:jpg,jpeg,png,gif',
-        ]);
+            $this->validate($request,[
+                'product'=>'required|max:200',
+                'category'=>'required',
+                'quantity'=>'required|min:1',
+                'expiry_date'=>'required',
+                'supplier'=>'required',
+                'lot'=>'nullable|numeric',
+                'image'=>'file|image|mimes:jpg,jpeg,png,gif',
+                'entry_date' => ['required', 'date', 'after_or_equal:'.date('Y-m-d')],
+            ], [
+                'entry_date.after_or_equal' => 'La fecha de entrada no puede ser menor a hoy.',
+            ]);
         $imageName = null;
         if($request->hasFile('image')){
             $imageName = time().'.'.$request->image->extension();
             $request->image->move(public_path('storage/purchases'), $imageName);
         }
         Purchase::create([
-            'product'=>$request->product,
-            'category_id'=>$request->category,
-            'supplier_id'=>$request->supplier,
-            'cost_price'=>$request->cost_price,
-            'quantity'=>$request->quantity,
-            'expiry_date'=>$request->expiry_date,
-            'image'=>$imageName,
+              'product'=>$request->product,
+              'category_id'=>$request->category,
+              'supplier_id'=>$request->supplier,
+              'cost_price'=>$request->cost_price,
+              'quantity'=>$request->quantity,
+              'expiry_date'=>$request->expiry_date,
+              'entry_date'=>$request->entry_date ?? date('Y-m-d'),
+              'image'=>$imageName,
         ]);
         $notifications = notify("Se ha añadido la Entrada");
         return redirect()->route('purchases.index')->with($notifications);
@@ -149,15 +156,16 @@ class PurchaseController extends Controller
      */
     public function update(Request $request, Purchase $purchase)
     {
-        $this->validate($request,[
-            'product'=>'required|max:200',
-            'category'=>'required',
-            'quantity'=>'required|min:1',
-            'expiry_date'=>'required',
-            'supplier'=>'required',
-            'cost_price'=>'nullable|numeric',
-            'image'=>'file|image|mimes:jpg,jpeg,png,gif',
-        ]);
+            $this->validate($request,[
+                'product'=>'required|max:200',
+                'category'=>'required',
+                'quantity'=>'required|min:1',
+                'expiry_date'=>'required',
+                'supplier'=>'required',
+                'cost_price'=>'nullable|numeric',
+                'image'=>'file|image|mimes:jpg,jpeg,png,gif',
+                'entry_date' => ['required', 'date'],
+            ]);
         $imageName = $purchase->image;
         if($request->hasFile('image')){
             $imageName = time().'.'.$request->image->extension();
@@ -169,6 +177,7 @@ class PurchaseController extends Controller
             'supplier_id'=>$request->supplier,
             'quantity'=>$request->quantity,
             'expiry_date'=>$request->expiry_date,
+                'entry_date'=>$request->entry_date,
             'image'=>$imageName,
         ]);
 

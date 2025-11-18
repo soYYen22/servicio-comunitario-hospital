@@ -93,6 +93,12 @@
 								<input class="form-control" value="{{$purchase->expiry_date}}" type="date" name="expiry_date">
 							</div>
 						</div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label>Fecha de entrada <span class="text-danger">*</span></label>
+                                <input class="form-control" value="{{$purchase->entry_date}}" type="date" name="entry_date" required>
+                            </div>
+                        </div>
 						<div class="col-lg-6">
 							<div class="form-group">
 								<label>Imagen del medicamento</label>

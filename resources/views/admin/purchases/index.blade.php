@@ -37,6 +37,7 @@
 								<!-- Costo de compra eliminado -->
 								<th>Cantidad</th>
 								<th>Fecha de vencimiento</th>
+                                <th>Fecha de entradas</th>
 								<th class="action-btn">Acción</th>
 							</tr>
 						</thead>
@@ -68,6 +69,7 @@
 					// Costo de compra eliminado
 					{data: 'quantity', name: 'quantity'},
 					{data: 'expiry_date', name: 'expiry_date'},
+	                    {data: 'entry_date', name: 'entry_date'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });

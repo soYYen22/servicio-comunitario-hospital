@@ -38,6 +38,7 @@
                                     <th>Cantidad</th>
                                     <th>Proveedor</th>
                                     <th>Fecha de vencimiento</th>
+                                       <th>Fecha de entrada</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -66,6 +67,7 @@
                                     <td>{{$purchase->quantity}}</td>
                                     <td>{{$purchase->supplier->name}}</td>
                                     <td>{{date_format(date_create($purchase->expiry_date),"d M, Y")}}</td>
+                                       <td>{{ $purchase->entry_date ? date_format(date_create($purchase->entry_date),"d M, Y") : '' }}</td>
                                 </tr>
                                 @endif
                             @endforeach                         
