@@ -29,9 +29,9 @@ class PurchaseController extends Controller
                     $image = '';
                     if(!empty($purchase->image)){
                         $image = '<span class="avatar avatar-sm mr-2">
-						<img class="avatar-img" src="'.asset("storage/purchases/".$purchase->image).'" alt="product">
-					    </span>';
-                    }                 
+                        <img class="avatar-img" src="'.asset("storage/purchases/".$purchase->image).'" alt="product">
+                        </span>';
+                    }
                     return $purchase->product.' ' . $image;
                 })
                 ->addColumn('category',function($purchase){
@@ -39,20 +39,13 @@ class PurchaseController extends Controller
                         return $purchase->category->name;
                     }
                 })
-                ->addColumn('price', function($purchase){
-                    // Prefer product price from related Product (same as Products list)
-                    if(!empty($purchase->purchaseProduct) && isset($purchase->purchaseProduct->price)){
-                        $v = $purchase->purchaseProduct->price;
-                        return (floor($v) == $v) ? (int)$v : rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
-                    }
-                    // Fallback to cost_price if product price is not available
-                    if(isset($purchase->cost_price)){
-                        $v = $purchase->cost_price;
-                        return (floor($v) == $v) ? (int)$v : rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
+                // Agregar columna lote igual que en productos
+                ->addColumn('lote',function($purchase){
+                    if(!empty($purchase->purchaseProduct)){
+                        return $purchase->purchaseProduct->lote;
                     }
                     return '';
                 })
-                // cost_price column removed
                 ->addColumn('supplier',function($purchase){
                     return $purchase->supplier->name;
                 })
@@ -179,10 +172,10 @@ class PurchaseController extends Controller
             'image'=>$imageName,
         ]);
 
-        // If a related Product exists, update its price field with the provided lote value
+        // Si existe un Product relacionado, actualiza su campo 'lote' con el valor proporcionado
         if($request->filled('lot') && $purchase->purchaseProduct){
             $purchase->purchaseProduct()->update([
-                'price' => (float) $request->lot,
+                'lote' => $request->lot,
             ]);
         }
         $notifications = notify("Entrada Actualizada");

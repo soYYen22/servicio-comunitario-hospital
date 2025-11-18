@@ -63,11 +63,11 @@
 									<label>Lote <span class="text-danger">*</span></label>
 									@php
 										$lotOld = old('lot');
-										$lotFromProduct = isset($purchase->purchaseProduct) && isset($purchase->purchaseProduct->price) ? (float)$purchase->purchaseProduct->price : null;
+										$lotFromProduct = isset($purchase->purchaseProduct) && isset($purchase->purchaseProduct->lote) ? $purchase->purchaseProduct->lote : null;
 										if($lotOld !== null) {
 											$displayLot = $lotOld;
 										} elseif($lotFromProduct !== null) {
-											$displayLot = (floor($lotFromProduct) == $lotFromProduct) ? intval($lotFromProduct) : rtrim(rtrim(number_format($lotFromProduct, 2, '.', ''), '0'), '.');
+											$displayLot = $lotFromProduct;
 										} else {
 											$displayLot = '';
 										}

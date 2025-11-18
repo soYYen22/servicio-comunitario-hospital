@@ -64,7 +64,7 @@
             columns: [
                 {data: 'product', name: 'product'},
                 {data: 'category', name: 'category'},
-                {data: 'price', name: 'price'},
+                {data: 'lote', name: 'lote'},
                 {data: 'quantity', name: 'quantity'},
 				// Descuento eliminado
 				{data: 'expiry_date', name: 'expiry_date'},

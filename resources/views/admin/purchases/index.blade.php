@@ -64,7 +64,7 @@
 					{data: 'product', name: 'product'},
 					{data: 'category', name: 'category'},
 					{data: 'supplier', name: 'supplier'},
-					{data: 'price', name: 'price'},
+					{data: 'lote', name: 'lote'},
 					// Costo de compra eliminado
 					{data: 'quantity', name: 'quantity'},
 					{data: 'expiry_date', name: 'expiry_date'},
