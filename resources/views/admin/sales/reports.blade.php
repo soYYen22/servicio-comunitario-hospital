@@ -49,8 +49,8 @@
                                                     </span>
                                                 @endif
                                             </td>
-													 <td>{{$sale->quantity}}</td>
-													 <td>{{ isset($sale->product) && isset($sale->product->lote) ? $sale->product->lote : '' }}</td>
+											<td>{{$sale->quantity}}</td>
+											<td>{{ isset($sale->product) && isset($sale->product->lote) ? $sale->product->lote : '' }}</td>
                                             <td>{{date_format(date_create($sale->created_at),"d M, Y")}}</td>
                                         </tr>
                                     @endif
@@ -114,34 +114,82 @@
 			dom: 'Bfrtip',		
 			buttons: [
 				{
-				extend: 'collection',
-				text: 'Exportar Datos',
-				buttons: [
-					{
-						extend: 'pdf',
-						exportOptions: {
-							columns: "thead th:not(.action-btn)"
+					extend: 'collection',
+					text: 'Exportar Datos',
+					buttons: [
+
+						/** -------------------- PDF -------------------- **/
+						{
+							extend: 'pdf',
+							exportOptions: {
+								columns: "thead th:not(.action-btn)"
+							},
+							customize: function (doc) {
+								// Quitar título automático del PDF
+								doc.info = { title: '' };
+
+								// Quitar títulos agregados por DataTables
+								doc.content = doc.content.filter(function(item) {
+									return !(item.style === 'title' || item.style === 'header' || item.fontSize >= 14);
+								});
+							}
+						},
+
+						/** -------------------- EXCEL -------------------- **/
+						{
+							extend: 'excel',
+							exportOptions: {
+								columns: "thead th:not(.action-btn)"
+							},
+							customize: function (xlsx) {
+								var sheet = xlsx.xl.worksheets['sheet1.xml'];
+
+								// Eliminar títulos automáticos (celda A1)
+								$('row c[r^="A1"]', sheet).each(function () {
+									$(this).text('');
+								});
+							}
+						},
+
+						/** -------------------- CSV -------------------- **/
+						{
+							extend: 'csv',
+							exportOptions: {
+								columns: "thead th:not(.action-btn)"
+							},
+							customize: function (csv) {
+								let lines = csv.split("\n");
+
+								// Si la primera línea es un título, se elimina
+								if (lines[0].toLowerCase().includes("reporte") ||
+									lines[0].toLowerCase().includes("data")) {
+									lines.shift();
+								}
+
+								return lines.join("\n");
+							}
+						},
+
+						/** -------------------- PRINT -------------------- **/
+						{
+							extend: 'print',
+							exportOptions: {
+								columns: "thead th:not(.action-btn)"
+							},
+							customize: function (win) {
+								// Eliminar encabezado H1 generado por DataTables
+								$(win.document.body).find('h1').remove();
+
+								// Eliminar textos de gran tamaño
+								$(win.document.body).find('*').each(function() {
+									if (parseInt($(this).css('font-size')) >= 18) {
+										$(this).remove();
+									}
+								});
+							}
 						}
-					},
-					{
-						extend: 'excel',
-						exportOptions: {
-							columns: "thead th:not(.action-btn)"
-						}
-					},
-					{
-						extend: 'csv',
-						exportOptions: {
-							columns: "thead th:not(.action-btn)"
-						}
-					},
-					{
-						extend: 'print',
-						exportOptions: {
-							columns: "thead th:not(.action-btn)"
-						}
-					}
-				]
+
+					]
 				}
 			]
 		});

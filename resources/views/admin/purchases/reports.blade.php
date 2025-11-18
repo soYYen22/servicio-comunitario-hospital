@@ -2,7 +2,6 @@
 
 <x-assets.datatables />
 
-
 @push('page-css')
     
 @endpush
@@ -34,11 +33,10 @@
                                     <th>Nombre del medicamento</th>
                                     <th>Categoría</th>
                                     <th>Lote</th>
-                                    <!-- Costo de compra eliminado -->
                                     <th>Cantidad</th>
                                     <th>Proveedor</th>
                                     <th>Fecha de vencimiento</th>
-                                       <th>Fecha de entrada</th>
+                                    <th>Fecha de entrada</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -57,17 +55,15 @@
                                     </td>
                                     <td>{{$purchase->category->name}}</td>
                                     <td>
-                                            @if(!empty($purchase->purchaseProduct) && isset($purchase->purchaseProduct->lote))
-                                                {{ $purchase->purchaseProduct->lote }}
-                                            @else
-                                            
-                                            @endif
+                                        @if(!empty($purchase->purchaseProduct) && isset($purchase->purchaseProduct->lote))
+                                            {{ $purchase->purchaseProduct->lote }}
+                                        @else
+                                        @endif
                                     </td>
-                                    <!-- Costo de compra eliminado -->
                                     <td>{{$purchase->quantity}}</td>
                                     <td>{{$purchase->supplier->name}}</td>
                                     <td>{{date_format(date_create($purchase->expiry_date),"d M, Y")}}</td>
-                                       <td>{{ $purchase->entry_date ? date_format(date_create($purchase->entry_date),"d M, Y") : '' }}</td>
+                                    <td>{{ $purchase->entry_date ? date_format(date_create($purchase->entry_date),"d M, Y") : '' }}</td>
                                 </tr>
                                 @endif
                             @endforeach                         
@@ -80,7 +76,6 @@
         </div>
     </div>
     @endisset
-
 
     <!-- Modal Generar -->
     <div class="modal fade" id="generate_report" aria-hidden="true" role="dialog">
@@ -122,7 +117,6 @@
     <!-- /Modal Generar -->
 @endsection
 
-
 @push('page-js')
 <script>
     $(document).ready(function(){
@@ -130,34 +124,81 @@
             dom: 'Bfrtip',		
             buttons: [
                 {
-                extend: 'collection',
-                text: 'Exportar datos',
-                buttons: [
-                    {
-                        extend: 'pdf',
-                        exportOptions: {
-                            columns: "thead th:not(.action-btn)"
+                    extend: 'collection',
+                    text: 'Exportar datos',
+                    buttons: [
+
+                        /** -------------------- PDF -------------------- **/
+                        {
+                            extend: 'pdf',
+                            exportOptions: {
+                                columns: "thead th:not(.action-btn)"
+                            },
+                            customize: function (doc) {
+                                // Eliminar título del archivo PDF
+                                doc.info = { title: '' };
+
+                                // Quitar título automático
+                                doc.content = doc.content.filter(function(item) {
+                                    return !(item.style === 'title' || item.style === 'header' || item.fontSize >= 14);
+                                });
+                            }
+                        },
+
+                        /** -------------------- EXCEL -------------------- **/
+                        {
+                            extend: 'excel',
+                            exportOptions: {
+                                columns: "thead th:not(.action-btn)"
+                            },
+                            customize: function (xlsx) {
+                                var sheet = xlsx.xl.worksheets['sheet1.xml'];
+
+                                // Quitar título en Excel si DataTables agrega uno
+                                $('row c[r^="A1"]', sheet).each(function () {
+                                    $(this).text('');
+                                });
+                            }
+                        },
+
+                        /** -------------------- CSV -------------------- **/
+                        {
+                            extend: 'csv',
+                            exportOptions: {
+                                columns: "thead th:not(.action-btn)"
+                            },
+                            customize: function (csv) {
+                                let lines = csv.split("\n");
+
+                                // Si la primera línea parece un título, se elimina
+                                if (lines[0].toLowerCase().includes("reporte") || 
+                                    lines[0].toLowerCase().includes("data")) {
+                                    lines.shift();
+                                }
+
+                                return lines.join("\n");
+                            }
+                        },
+
+                        /** -------------------- PRINT -------------------- **/
+                        {
+                            extend: 'print',
+                            exportOptions: {
+                                columns: "thead th:not(.action-btn)"
+                            },
+                            customize: function (win) {
+                                // Eliminar H1 automático
+                                $(win.document.body).find('h1').remove();
+
+                                // Quitar elementos con fuente grande
+                                $(win.document.body).find('*').each(function() {
+                                    if (parseInt($(this).css('font-size')) >= 18) {
+                                        $(this).remove();
+                                    }
+                                });
+                            }
                         }
-                    },
-                    {
-                        extend: 'excel',
-                        exportOptions: {
-                            columns: "thead th:not(.action-btn)"
-                        }
-                    },
-                    {
-                        extend: 'csv',
-                        exportOptions: {
-                            columns: "thead th:not(.action-btn)"
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        exportOptions: {
-                            columns: "thead th:not(.action-btn)"
-                        }
-                    }
-                ]
+                    ]
                 }
             ]
         });
