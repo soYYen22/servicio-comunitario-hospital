@@ -49,8 +49,8 @@
                                                     </span>
                                                 @endif
                                             </td>
-											<td>{{$sale->quantity}}</td>
-											<td>{{ isset($sale->product) && isset($sale->product->price) ? ((floor($sale->product->price) == $sale->product->price) ? intval($sale->product->price) : rtrim(rtrim(number_format($sale->product->price, 2, '.', ''), '0'), '.')) : '' }}</td>
+													 <td>{{$sale->quantity}}</td>
+													 <td>{{ isset($sale->product) && isset($sale->product->lote) ? $sale->product->lote : '' }}</td>
                                             <td>{{date_format(date_create($sale->created_at),"d M, Y")}}</td>
                                         </tr>
                                     @endif

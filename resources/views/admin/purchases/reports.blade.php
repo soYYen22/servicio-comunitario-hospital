@@ -56,13 +56,11 @@
                                     </td>
                                     <td>{{$purchase->category->name}}</td>
                                     <td>
-                                        @if(!empty($purchase->purchaseProduct) && isset($purchase->purchaseProduct->price))
-                                            {{ (floor($purchase->purchaseProduct->price) == $purchase->purchaseProduct->price) ? intval($purchase->purchaseProduct->price) : rtrim(rtrim(number_format($purchase->purchaseProduct->price, 2, '.', ''), '0'), '.') }}
-                                        @elseif(isset($purchase->cost_price))
-                                            {{ (floor($purchase->cost_price) == $purchase->cost_price) ? intval($purchase->cost_price) : rtrim(rtrim(number_format($purchase->cost_price, 2, '.', ''), '0'), '.') }}
-                                        @else
+                                            @if(!empty($purchase->purchaseProduct) && isset($purchase->purchaseProduct->lote))
+                                                {{ $purchase->purchaseProduct->lote }}
+                                            @else
                                             
-                                        @endif
+                                            @endif
                                     </td>
                                     <!-- Costo de compra eliminado -->
                                     <td>{{$purchase->quantity}}</td>
