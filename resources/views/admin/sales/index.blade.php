@@ -63,7 +63,7 @@
             columns: [
 				{data: 'product', name: 'product'},
 				{data: 'quantity', name: 'quantity'},
-				{data: 'price', name: 'price'},
+				{data: 'lote', name: 'lote'},
 					{data: 'date', name: 'date'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]

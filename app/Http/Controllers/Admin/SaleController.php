@@ -23,21 +23,25 @@ class SaleController extends Controller
     {
         $title = 'sales';
         if($request->ajax()){
-                $sales = Sale::with('product')->latest();
-                return DataTables::of($sales)
-                    ->addIndexColumn()
-                    ->addColumn('product',function($sale){
-                        $image = '';
-                        if(!empty($sale->product)){
-                            $image = null;
-                            if(!empty($sale->product->purchase->image)){
-                                $image = '<span class="avatar avatar-sm mr-2">
-                                <img class="avatar-img" src="'.asset("storage/purchases/".$sale->product->purchase->image).'" alt="image">
-                                </span>';
+                    $sales = Sale::with(['product', 'product.purchase'])->latest();
+                    return DataTables::of($sales)
+                        ->addIndexColumn()
+                        ->addColumn('product',function($sale){
+                            $image = '';
+                            if(!empty($sale->product)){
+                                $image = null;
+                                if(!empty($sale->product->purchase) && !empty($sale->product->purchase->image)){
+                                    $image = '<span class="avatar avatar-sm mr-2">
+                                    <img class="avatar-img" src="'.asset("storage/purchases/".$sale->product->purchase->image).'" alt="image">
+                                    </span>';
+                                }
+                                return $sale->product->purchase->product. ' ' . $image;
                             }
-                            return $sale->product->purchase->product. ' ' . $image;
-                        }                 
-                    })
+                        })
+                        ->addColumn('lote', function($sale) {
+                            // Mostrar el lote del producto si existe
+                            return $sale->product && isset($sale->product->lote) ? $sale->product->lote : '';
+                        })
                     ->addColumn('price', function($sale){
                         if(!empty($sale->product) && isset($sale->product->price)){
                             $v = $sale->product->price;
