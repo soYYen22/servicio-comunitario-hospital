@@ -181,11 +181,21 @@ class PurchaseController extends Controller
             'image'=>$imageName,
         ]);
 
-        // Si existe un Product relacionado, actualiza su campo 'lote' con el valor proporcionado
-        if($request->filled('lot') && $purchase->purchaseProduct){
-            $purchase->purchaseProduct()->update([
-                'lote' => $request->lot,
-            ]);
+        // Si existe un Product relacionado, actualiza su campo 'lote' con el valor proporcionado.
+        // Acepta tanto el campo 'lote' (vista en español) como 'lot' (compatibilidad previa).
+        if($purchase->purchaseProduct){
+            $loteValue = null;
+            if($request->filled('lote')){
+                $loteValue = $request->lote;
+            } elseif($request->filled('lot')){
+                $loteValue = $request->lot;
+            }
+
+            if(!is_null($loteValue)){
+                $purchase->purchaseProduct()->update([
+                    'lote' => $loteValue,
+                ]);
+            }
         }
         $notifications = notify("Entrada Actualizada");
         return redirect()->route('purchases.index')->with($notifications);

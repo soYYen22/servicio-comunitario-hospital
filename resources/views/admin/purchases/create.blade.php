@@ -68,15 +68,7 @@
 					<div class="service-fields mb-3">
 						<div class="row">
 							<!-- Precio de costo -->
-							<div class="col-lg-6">
-								<div class="form-group">
-											<label>Lote <span class="text-danger">*</span></label>
-											<input class="form-control" type="text" name="cost_price" value="{{ old('cost_price') }}">
-											@error('cost_price')
-												<span class="text-danger">{{ $message }}</span>
-											@enderror
-								</div>
-							</div>
+
 
 							<div class="col-lg-6">
 								<div class="form-group">

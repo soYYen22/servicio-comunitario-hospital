@@ -62,17 +62,10 @@
 								<div class="form-group">
 									<label>Lote <span class="text-danger">*</span></label>
 									@php
-										$lotOld = old('lot');
-										$lotFromProduct = isset($purchase->purchaseProduct) && isset($purchase->purchaseProduct->lote) ? $purchase->purchaseProduct->lote : null;
-										if($lotOld !== null) {
-											$displayLot = $lotOld;
-										} elseif($lotFromProduct !== null) {
-											$displayLot = $lotFromProduct;
-										} else {
-											$displayLot = '';
-										}
+										$displayLote = old('lote') ?? (isset($purchase->purchaseProduct) && isset($purchase->purchaseProduct->lote) ? $purchase->purchaseProduct->lote : '') ?? '';
 									@endphp
-									<input class="form-control" value="{{ $displayLot }}" type="text" name="lot">
+									<input class="form-control" type="text" name="lote" value="{{ $displayLote }}">
+									<input type="hidden" name="lot" value="{{ $displayLote }}">
 								</div>
 							</div>
 
