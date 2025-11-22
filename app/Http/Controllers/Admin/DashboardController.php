@@ -6,8 +6,10 @@ use App\Models\Sale;
 use App\Models\Category;
 use App\Models\Purchase;
 use App\Models\Supplier;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
@@ -33,7 +35,12 @@ class DashboardController extends Controller
                 ])
                 ->options([]);
         
-        $total_expired_products = Purchase::whereDate('expiry_date', '=', Carbon::now())->count();
+        // Mostrar la cantidad total de unidades vencidas (sumatoria de `quantity` de purchases vencidas)
+        // En Postgres `quantity` puede estar almacenado como texto, por eso casteamos a INTEGER antes de sumar.
+        $total_expired_products = (int) DB::table('purchases')
+            ->whereDate('expiry_date', '<=', Carbon::today())
+            ->selectRaw('COALESCE(SUM(CAST(quantity AS INTEGER)), 0) as total')
+            ->value('total');
         $latest_sales = Sale::whereDate('created_at','=',Carbon::now())->get();
         $out_of_stock = Purchase::where('quantity', '<=', 0)->count();
         return view('admin.dashboard',compact(
