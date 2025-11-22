@@ -35,10 +35,10 @@ class DashboardController extends Controller
         
         $total_expired_products = Purchase::whereDate('expiry_date', '=', Carbon::now())->count();
         $latest_sales = Sale::whereDate('created_at','=',Carbon::now())->get();
-        $today_sales = Sale::whereDate('created_at','=',Carbon::now())->sum('total_price');
+        $out_of_stock = Purchase::where('quantity', '<=', 0)->count();
         return view('admin.dashboard',compact(
             'title','pieChart','total_expired_products',
-            'latest_sales','today_sales','total_categories'
+            'latest_sales','out_of_stock','total_categories'
         ));
     }
 }

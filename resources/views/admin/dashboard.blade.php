@@ -25,11 +25,11 @@
                         <i class="fe fe-money"></i>
                     </span>
                     <div class="dash-count">
-                        <h3>{{ (floor($today_sales) == $today_sales) ? intval($today_sales) : rtrim(rtrim(number_format($today_sales, 2, '.', ''), '0'), '.') }}</h3>
+                        <h3>{{$out_of_stock}}</h3>
                     </div>
                 </div>
                 <div class="dash-widget-info">
-                    <h6 class="text-muted">Ventas en Efectivo de Hoy</h6>
+                    <h6 class="text-muted">Productos Agotados</h6>
                     <div class="progress progress-sm">
                         <div class="progress-bar bg-primary w-50"></div>
                     </div>
