@@ -24,50 +24,8 @@
 	
 	<!-- Menú derecho del encabezado -->
 	<ul class="nav user-menu">
-		<li class="nav-item dropdown">
-			<a href="#" data-target="#add_sales" title="realizar una venta" data-toggle="modal" class="dropdown-toggle nav-link">
-				<i class="fas fa-clipboard"></i>
-			</a>
-		</li>
-		<!-- Notificaciones -->
-		<li class="nav-item dropdown noti-dropdown">
-			<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-				<i class="fe fe-bell"></i> <span class="badge badge-pill">{{ auth()->user()->unReadNotifications->count() }}</span>
-			</a>
-			<div class="dropdown-menu notifications">
-				<div class="topnav-dropdown-header">
-					<span class="notification-title">Notificaciones</span>
-					<a href="{{ route('mark-as-read') }}" class="clear-noti">Marcar todas como leídas</a>
-				</div>
-				<div class="noti-content">
-					<ul class="notification-list">
-						@foreach (auth()->user()->unReadNotifications as $notification)
-							<li class="notification-message">
-								<a href="{{ route('read') }}">
-									<div class="media">
-										<span class="avatar avatar-sm">
-											<img class="avatar-img rounded-circle" alt="Imagen del producto" src="{{ asset('storage/purchases/'.$notification['image']) }}">
-										</span>
-										<div class="media-body">
-											<h6 class="text-danger">Alerta de Stock</h6>
-											<p class="noti-details">
-												<span class="noti-title">{{ $notification->data['product_name'] }} tiene solo {{ $notification->data['quantity'] }} unidades restantes.</span>
-												<span>Por favor actualiza la cantidad de compra.</span>
-											</p>
-											<p class="noti-time"><span class="notification-time">{{ $notification->created_at->diffForHumans() }}</span></p>
-										</div>
-									</div>
-								</a>
-							</li>
-						@endforeach						
-					</ul>
-				</div>
-				<div class="topnav-dropdown-footer">
-					<a href="#">Ver todas las notificaciones</a>
-				</div>
-			</div>
-		</li>
-		<!-- /Notificaciones -->
+
+
 		
 		<!-- Menú de usuario -->
 		<li class="nav-item dropdown has-arrow">
