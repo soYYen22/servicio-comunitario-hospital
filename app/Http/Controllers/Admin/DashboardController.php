@@ -15,7 +15,7 @@ class DashboardController extends Controller
     public function index(){
         $title = 'dashboard';
         $total_purchases = Purchase::where('expiry_date','!=',Carbon::now())->count();
-        $total_categories = Category::count();
+        $total_product_entries = Purchase::distinct('product')->count('product');
         $total_suppliers = Supplier::count();
         $total_sales = Sale::count();
         
@@ -38,7 +38,7 @@ class DashboardController extends Controller
         $out_of_stock = Purchase::where('quantity', '<=', 0)->count();
         return view('admin.dashboard',compact(
             'title','pieChart','total_expired_products',
-            'latest_sales','out_of_stock','total_categories'
+            'latest_sales','out_of_stock','total_product_entries'
         ));
     }
 }

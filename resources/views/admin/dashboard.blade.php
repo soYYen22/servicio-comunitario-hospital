@@ -45,11 +45,11 @@
                         <i class="fe fe-credit-card"></i>
                     </span>
                     <div class="dash-count">
-                        <h3>{{$total_categories}}</h3>
+                        <h3>{{$total_product_entries}}</h3>
                     </div>
                 </div>
                 <div class="dash-widget-info">
-                    <h6 class="text-muted">Categorías de Productos</h6>
+                    <h6 class="text-muted">Entradas de Productos</h6>
                     <div class="progress progress-sm">
                         <div class="progress-bar bg-success w-50"></div>
                     </div>
