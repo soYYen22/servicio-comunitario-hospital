@@ -89,7 +89,7 @@
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label>Fecha de entrada <span class="text-danger">*</span></label>
-                                <input class="form-control" value="{{$purchase->entry_date}}" type="date" name="entry_date" required>
+								<input class="form-control" value="{{$purchase->entry_date}}" type="date" name="entry_date" required min="{{ \Carbon\Carbon::now(config('app.timezone'))->subDay()->toDateString() }}">
                             </div>
                         </div>
 						<div class="col-lg-6">

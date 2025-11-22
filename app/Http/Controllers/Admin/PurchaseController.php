@@ -10,6 +10,7 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use QCod\AppSettings\Setting\AppSettings;
+use Carbon\Carbon;
 
 class PurchaseController extends Controller
 {
@@ -98,6 +99,7 @@ class PurchaseController extends Controller
      */
     public function store(Request $request)
     {
+            $minDate = Carbon::now(config('app.timezone'))->subDay()->toDateString();
             $this->validate($request,[
                 'product'=>'required|max:200',
                 'category'=>'required',
@@ -106,9 +108,9 @@ class PurchaseController extends Controller
                 'supplier'=>'required',
                 'lot'=>'nullable|numeric',
                 'image'=>'file|image|mimes:jpg,jpeg,png,gif',
-                'entry_date' => ['required', 'date', 'after_or_equal:'.date('Y-m-d')],
+                'entry_date' => ['required', 'date', 'after_or_equal:'.$minDate],
             ], [
-                'entry_date.after_or_equal' => 'La fecha de entrada no puede ser menor a hoy.',
+                'entry_date.after_or_equal' => 'La fecha de entrada no puede ser menor a ' . $minDate,
             ]);
         $imageName = null;
         if($request->hasFile('image')){
@@ -156,6 +158,7 @@ class PurchaseController extends Controller
      */
     public function update(Request $request, Purchase $purchase)
     {
+            $minDate = Carbon::now(config('app.timezone'))->subDay()->toDateString();
             $this->validate($request,[
                 'product'=>'required|max:200',
                 'category'=>'required',
@@ -164,7 +167,9 @@ class PurchaseController extends Controller
                 'supplier'=>'required',
                 'cost_price'=>'nullable|numeric',
                 'image'=>'file|image|mimes:jpg,jpeg,png,gif',
-                'entry_date' => ['required', 'date'],
+                'entry_date' => ['required', 'date', 'after_or_equal:'.$minDate],
+            ], [
+                'entry_date.after_or_equal' => 'La fecha de entrada no puede ser menor a ' . $minDate,
             ]);
         $imageName = $purchase->image;
         if($request->hasFile('image')){

@@ -96,7 +96,7 @@
 	                        <div class="col-lg-6">
 	                            <div class="form-group">
 										<label>Fecha de entrada <span class="text-danger">*</span></label>
-										<input class="form-control" type="date" name="entry_date" required>
+										<input class="form-control" type="date" name="entry_date" required min="{{ \Carbon\Carbon::now(config('app.timezone'))->subDay()->toDateString() }}">
 										@error('entry_date')
 											<span class="text-danger">{{ $message }}</span>
 										@enderror
