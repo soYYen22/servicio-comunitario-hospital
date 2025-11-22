@@ -65,7 +65,7 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         $this->validate($request,[
-            'name'=>'required|min:10|max:255',
+            'name'=>'required|min:2|max:255',
             'product'=>'required',
             'email'=>'nullable|email|string',
             'phone'=>'nullable|min:10|max:20',
@@ -111,7 +111,7 @@ class SupplierController extends Controller
     public function update(Request $request, Supplier $supplier)
     {
         $this->validate($request,[
-            'name'=>'required|min:10|max:255',
+            'name'=>'required|min:2|max:255',
             'product'=>'required',
             'email'=>'nullable|email|string',
             'phone'=>'nullable|min:10|max:20',
@@ -128,7 +128,7 @@ class SupplierController extends Controller
             'product'=>$request->product,
             'comment'=>$request->comment,
         ]);
-        $notification = notify("Supplier has been added");
+        $notification = notify("Proveedor Agregado");
         return redirect()->route('suppliers.index')->with($notification);
     }
 
