@@ -176,17 +176,14 @@ class SaleController extends Controller
             'product'=>'required',
             'quantity'=>'required|integer|min:1'
         ]);
-        $this->validate($request, [
-            'product' => 'required',
-            'quantity' => 'required|integer|min:1'
-        ]);
 
         $newProduct = Product::find($request->product);
         $oldProduct = $sale->product;
 
         $notification = '';
 
-        $updated = DB::transaction(function() use ($sale, $oldProduct, $newProduct, $request, &$notification) {
+        try {
+            $updated = DB::transaction(function() use ($sale, $oldProduct, $newProduct, $request, &$notification) {
             $oldQty = (int) ($sale->quantity ?? 0);
             $newQty = (int) $request->quantity;
 
@@ -235,8 +232,13 @@ class SaleController extends Controller
                 $notification = notify("El producto ha sido actualizado.");
             }
 
-            return true;
-        });
+                return true;
+            });
+
+        } catch (\Exception $e) {
+            $notification = notify("No hay suficientes existencias para completar la salida.", 'danger');
+            return redirect()->back()->with($notification);
+        }
 
         return redirect()->route('sales.index')->with($notification);
     }
