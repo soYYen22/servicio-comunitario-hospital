@@ -114,31 +114,33 @@ class SaleController extends Controller
         $purchased_item = Purchase::find($sold_product->purchase->id);
         $new_quantity = ($purchased_item->quantity) - ($request->quantity);
         $notification = '';
-        if (!($new_quantity < 0)){
 
-            $purchased_item->update([
-                'quantity'=>$new_quantity,
-            ]);
+        // If requested quantity exceeds available stock, return with an error notification
+        if ($new_quantity < 0) {
+            $notification = notify("No hay suficientes existencias para completar la salida.", 'danger');
+            return redirect()->back()->with($notification);
+        }
 
-            /**
-             * calcualting item's total price
-            **/
-            $total_price = (float) $request->quantity * (float) $sold_product->price;
-            Sale::create([
-                'product_id'=>$request->product,
-                'quantity'=>$request->quantity,
-                'total_price'=>$total_price,
-            ]);
+        // Update purchase quantity and create sale
+        $purchased_item->update([
+            'quantity' => $new_quantity,
+        ]);
 
-            $notification = notify("El Producto Ha Salido.");
-        } 
-        if($new_quantity <=1 && $new_quantity !=0){
-            // send notification 
+        // calculating item's total price
+        $total_price = (float) $request->quantity * (float) $sold_product->price;
+        Sale::create([
+            'product_id' => $request->product,
+            'quantity' => $request->quantity,
+            'total_price' => $total_price,
+        ]);
+
+        $notification = notify("El Producto Ha Salido.");
+
+        // Check low stock and notify only after a successful sale
+        if ($new_quantity <= 1 && $new_quantity != 0) {
             $product = Purchase::where('quantity', '<=', 1)->first();
             event(new PurchaseOutStock($product));
-            // end of notification 
-            $notification = notify("¡El producto se está agotando!");
-            
+            $notification = notify("¡El producto se está agotando!", 'warning');
         }
 
         return redirect()->route('sales.index')->with($notification);
