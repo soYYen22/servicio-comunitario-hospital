@@ -23,17 +23,6 @@ return [
                     'hint' => 'Puedes establecer aquí el nombre de la aplicación' // texto de ayuda
                 ],
                 [
-                    'name' => 'app_currency',
-                    'type' => 'text',
-                    'label' => 'Moneda',
-                    'placeholder' => 'Símbolo de la moneda',
-                    'class' => 'form-control',
-                    'style' => '', // estilos en línea
-                    'rules' => 'required|max:10', // validación
-                    'value' => '', // valor por defecto (sin símbolo)
-                    'hint' => 'Usa el símbolo de tu moneda, por ejemplo $',
-                ],
-                [
                     'name' => 'logo',
                     'type' => 'image',
                     'label' => 'Subir Logo',
