@@ -10,7 +10,7 @@
 <div class="col-sm-7 col-auto">
 	<h3 class="page-title">Categorías</h3>
 	<ul class="breadcrumb">
-		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Panel</a></li>
+		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Panel Principal</a></li>
 		<li class="breadcrumb-item active">Categorías</li>
 	</ul>
 </div>
@@ -27,9 +27,9 @@
 				<div class="table-responsive">
 					<table id="category-table" class="datatable table table-striped table-bordered table-hover table-center mb-0">
 						<thead>
-							<tr style="boder:1px solid black;">
+							<tr>
 								<th>Nombre</th>
-								<th>Fecha de creación</th>
+								<th>Fecha de Creación</th>
 								<th class="text-center action-btn">Acciones</th>
 							</tr>
 						</thead>
