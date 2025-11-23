@@ -19,7 +19,7 @@
 				
 				@can('view-products')
 				<li class="submenu">
-					<a href="#"><i class="fe fe-document"></i> <span> Productos</span> </a>
+					<a href="#"><i class="fa fa-solid fa-notes-medical"></i> <span> Productos</span> </a>
 					<ul style="display: none;">
 						<li><a class="{{ route_is(('products.*')) ? 'active' : '' }}" href="{{route('products.index')}}">Productos</a></li>
 						@can('create-product')<li><a class="{{ route_is('products.create') ? 'active' : '' }}" href="{{route('products.create')}}">Agregar Producto</a></li>@endcan
@@ -31,7 +31,7 @@
 				
 				@can('view-purchase')
 				<li class="submenu">
-					<a href="#"><i class="fe fe-star-o"></i> <span> Entradas</span> </a>
+					<a href="#"><i class="fa fa-sharp-duotone fa-thin fa-capsules"></i> <span> Entradas</span> </a>
 					<ul style="display: none;">
 						<li><a class="{{ route_is('purchases.*') ? 'active' : '' }}" href="{{route('purchases.index')}}">Entradas</a></li>
 						@can('create-purchase')
@@ -43,7 +43,7 @@
 
 				@can('view-sales')
 				<li class="submenu">
-					<a href="#"><i class="fe fe-activity"></i> <span> Salidas</span> </a>
+					<a href="#"><i class="fa fa-solid fa-hospital"></i> <span> Salidas</span> </a>
 					<ul style="display: none;">
 						<li><a class="{{ route_is('sales.*') ? 'active' : '' }}" href="{{route('sales.index')}}">Salidas</a></li>
 						@can('create-sale')
