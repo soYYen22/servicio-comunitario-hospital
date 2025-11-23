@@ -55,7 +55,7 @@ html {
 	height: 100%;
 }
 body {
-	background-color: #dadede;
+	background-color: #dee2e2;
 	color: #000000;
 	font-family: 'Mada', sans-serif;
 	font-size: 1rem;
@@ -1668,7 +1668,7 @@ html.menu-opened body {
 -----------------------*/
 
 .sidebar {
-    background-color: #1b5990;
+    background-color: #10518a;
    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);*/
     bottom: 0;
     left: 0;
@@ -1901,9 +1901,10 @@ html.menu-opened body {
 	margin-left: auto;
     position: relative;
 	width: 73px;
-    -webkit-user-select:none;
-	-moz-user-select:none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
 	-ms-user-select: none;
+	user-select: none;
 }
 .onoffswitch-checkbox {
     display: none;
@@ -2029,7 +2030,7 @@ html.menu-opened body {
 }
 .login-wrapper .loginbox .login-left {
     align-items: center;
-    background: linear-gradient(180deg, #1b5a90, #00d0f1);
+    background: linear-gradient(180deg, #1b9061, #00d0f1);
     border-radius: 6px 0 0 6px;
     flex-direction: column;
     justify-content: center;
@@ -3354,6 +3355,7 @@ table.table-inbox tbody tr.checked {
 	-moz-transition: all 0.5s;
 	-webkit-transition: all 0.5s;
 	-o-transition: all 0.5s;
+	transition: all 0.5s;
 	border: 1px solid #e7e7e7;
 	border-radius: 5px;
 	padding: 10px;
@@ -4042,7 +4044,6 @@ table.table-inbox tbody tr.checked {
 	padding: 0;
 }
 .social-share > li {
-	display: inline-block;
 	float: left;
 	margin-left: 10px;
 	text-align: center;
