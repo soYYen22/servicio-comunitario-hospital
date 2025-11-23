@@ -22,7 +22,7 @@
             <div class="card-body">
                 <div class="dash-widget-header">
                     <span class="dash-widget-icon text-primary border-primary">
-                        <i class="fe fe-money"></i>
+                        <i class="fa fa-solid fa-exclamation"></i>
                     </span>
                     <div class="dash-count">
                         <h3>{{$out_of_stock}}</h3>
@@ -42,7 +42,7 @@
             <div class="card-body">
                 <div class="dash-widget-header">
                     <span class="dash-widget-icon text-success">
-                        <i class="fe fe-credit-card"></i>
+                        <i class="fa fa-solid fa-capsules"></i>
                     </span>
                     <div class="dash-count">
                         <h3>{{$total_product_entries}}</h3>
@@ -62,7 +62,7 @@
             <div class="card-body">
                 <div class="dash-widget-header">
                     <span class="dash-widget-icon text-danger border-danger">
-                        <i class="fe fe-folder"></i>
+                        <i class="fa fa-skull"></i>
                     </span>
                     <div class="dash-count">
                         <h3>{{$total_expired_products}}</h3>
