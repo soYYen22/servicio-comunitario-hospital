@@ -25,6 +25,35 @@ class SaleController extends Controller
         if($request->ajax()){
                     $sales = Sale::with(['product', 'product.purchase'])->latest();
                     return DataTables::of($sales)
+                        ->filter(function ($query) use ($request) {
+                            if ($request->has('search') && isset($request->search['value']) && $request->search['value'] !== '') {
+                                $keyword = trim($request->search['value']);
+
+                                $query->where(function($q) use ($keyword) {
+                                    // If the keyword is numeric, match quantity exactly or cast to text for partial matches
+                                    if (is_numeric($keyword)) {
+                                        // If the user searches a number, match quantity exactly only
+                                        $q->where('quantity', intval($keyword));
+                                    } else {
+                                        // Non-numeric: try partial match on quantity as text as well
+                                        $q->whereRaw("CAST(quantity AS TEXT) ILIKE ?", ["%{$keyword}%"]);
+
+                                        // Destination partial match
+                                        $q->orWhere('destination', 'ilike', "%{$keyword}%");
+
+                                        // Search in related purchase.product (product name) - partial
+                                        $q->orWhereHas('product.purchase', function($q2) use ($keyword) {
+                                            $q2->where('product', 'ilike', "%{$keyword}%");
+                                        });
+
+                                        // Search in product.lote
+                                        $q->orWhereHas('product', function($q3) use ($keyword) {
+                                            $q3->where('lote', 'ilike', "%{$keyword}%");
+                                        });
+                                    }
+                                });
+                            }
+                        })
                         ->addIndexColumn()
                         ->addColumn('product',function($sale){
                             $image = '';
