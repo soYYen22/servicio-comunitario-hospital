@@ -45,6 +45,12 @@
 								<input type="number" value="1" class="form-control" name="quantity">
 							</div>
 						</div>
+						<div class="col-12">
+							<div class="form-group">
+								<label>Destino <span class="text-danger">*</span></label>
+								<input type="text" class="form-control" name="destination" required maxlength="255">
+							</div>
+						</div>
 					</div>
 					<button type="submit" class="btn btn-primary btn-block">Guardar cambios</button>
 				</form>

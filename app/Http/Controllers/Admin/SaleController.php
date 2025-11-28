@@ -42,6 +42,9 @@ class SaleController extends Controller
                             // Mostrar el lote del producto si existe
                             return $sale->product && isset($sale->product->lote) ? $sale->product->lote : '';
                         })
+                    ->addColumn('destination', function($sale){
+                        return isset($sale->destination) ? $sale->destination : '';
+                    })
                     ->addColumn('price', function($sale){
                         if(!empty($sale->product) && isset($sale->product->price)){
                             $v = $sale->product->price;
@@ -103,7 +106,8 @@ class SaleController extends Controller
     {
         $this->validate($request,[
             'product'=>'required',
-            'quantity'=>'required|integer|min:1'
+            'quantity'=>'required|integer|min:1',
+            'destination' => 'required|string|max:255'
         ]);
         $sold_product = Product::find($request->product);
         
@@ -132,6 +136,7 @@ class SaleController extends Controller
             'product_id' => $request->product,
             'quantity' => $request->quantity,
             'total_price' => $total_price,
+            'destination' => $request->destination ?? null,
         ]);
 
         $notification = notify("El Producto Ha Salido.");
@@ -174,7 +179,8 @@ class SaleController extends Controller
     {
         $this->validate($request,[
             'product'=>'required',
-            'quantity'=>'required|integer|min:1'
+            'quantity'=>'required|integer|min:1',
+            'destination' => 'required|string|max:255'
         ]);
 
         $newProduct = Product::find($request->product);
@@ -222,6 +228,7 @@ class SaleController extends Controller
                 'product_id' => $newProduct->id,
                 'quantity' => $newQty,
                 'total_price' => $total_price,
+                'destination' => $request->destination ?? null,
             ]);
 
             if($finalQuantity <= 1 && $finalQuantity != 0){

@@ -44,6 +44,12 @@
 								<input type="number" class="form-control edit_quantity" value="{{$sale->quantity ?? '1'}}" name="quantity">
 							</div>
 						</div>
+						<div class="col-12">
+							<div class="form-group">
+								<label>Destino <span class="text-danger">*</span></label>
+								<input type="text" class="form-control edit_destination" value="{{$sale->destination ?? ''}}" name="destination" required maxlength="255">
+							</div>
+						</div>
 					</div>
 					<button type="submit" class="btn btn-primary btn-block">Guardar Cambios</button>
 				</form>

@@ -33,6 +33,7 @@
 								<tr>
 									<th>Nombre del Producto</th>
 									<th>Cantidad</th>
+								<th>Destino</th>
 									<th>Lote</th>
 									<th>Fecha</th>
 								</tr>
@@ -50,6 +51,7 @@
                                                 @endif
                                             </td>
 											<td>{{$sale->quantity}}</td>
+											<td>{{ $sale->destination ?? '' }}</td>
 											<td>{{ isset($sale->product) && isset($sale->product->lote) ? $sale->product->lote : '' }}</td>
                                             <td>{{date_format(date_create($sale->created_at),"d M, Y")}}</td>
                                         </tr>
