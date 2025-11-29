@@ -21,6 +21,9 @@ class BackupController extends Controller
      */
     public function index()
     {
+        if (!auth()->user()->hasAnyPermission(['backup-app','backup-db'])) {
+            abort(403);
+        }
         $title = 'backups';
         if (!count(config('backup.backup.destination.disks'))) {
             dd(trans('backup.no_disks_configured'));
@@ -59,6 +62,10 @@ class BackupController extends Controller
      */
     public function create()
     {
+        if (!auth()->user()->hasAnyPermission(['backup-app','backup-db'])) {
+            abort(403);
+        }
+
         $notification = 'backup created successfully';
         try {
             ini_set('max_execution_time', 600);
@@ -93,6 +100,10 @@ class BackupController extends Controller
      */
     public function download(Request $request)
     {
+        if (!auth()->user()->hasAnyPermission(['backup-app','backup-db'])) {
+            abort(403);
+        }
+
         $disk = Storage::disk($request->input('disk'));
         $file_name = $request->input('file_name');
         $file_path = $request->input('path');
@@ -126,6 +137,10 @@ class BackupController extends Controller
      */
     public function destroy(Request $request, $file_name)
     {
+        if (!auth()->user()->hasAnyPermission(['backup-app','backup-db'])) {
+            abort(403);
+        }
+
         $disk = Storage::disk($request->input('disk'));
 
         // try to use explicit path param if available, otherwise build from config backup name

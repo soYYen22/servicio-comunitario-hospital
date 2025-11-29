@@ -96,9 +96,15 @@
 				<li class="{{ route_is('profile') ? 'active' : '' }}"> 
 					<a href="{{route('profile')}}"><i class="fe fe-user-plus"></i> <span>Perfil</span></a>
 				</li>
-				<li class="{{ route_is('backup.index') ? 'active' : '' }}"> 
-					<a href="{{route('backup.index')}}"><i class="material-icons">backup</i> <span>Copias de Seguridad</span></a>
-				</li>
+				@php
+				 		use Spatie\Permission\Models\Permission;
+				 		$backupPermissions = ['backup-app','backup-db'];
+				 		@endphp
+				 		@if(auth()->check() && Permission::whereIn('name',$backupPermissions)->exists() && auth()->user()->hasAnyPermission($backupPermissions))
+				 		<li class="{{ route_is('backup.index') ? 'active' : '' }}"> 
+				 			<a href="{{route('backup.index')}}"><i class="material-icons">backup</i> <span>Copias de Seguridad</span></a>
+				 		</li>
+				 		@endif
 				@can('view-settings')
 				<li class="{{ route_is('settings') ? 'active' : '' }}"> 
 					<a href="{{route('settings')}}">
