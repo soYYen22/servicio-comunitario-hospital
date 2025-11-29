@@ -22,7 +22,16 @@
 @section('content')
 <div class="row">
 	<div class="col-md-12">
-	
+
+		{{-- Mostrar rango de fechas si existen --}}
+		@if(isset($from_date) && isset($to_date))
+			<div class="mb-3" style="text-align: left;">
+				<strong>Desde:</strong> {{ \Carbon\Carbon::parse($from_date)->locale('es')->translatedFormat('d F, Y') }}
+				&nbsp;&nbsp;
+				<strong>Hasta:</strong> {{ \Carbon\Carbon::parse($to_date)->locale('es')->translatedFormat('d F, Y') }}
+			</div>
+		@endif
+
 		@isset($sales)
             <!--  Reporte de Ventas -->
             <div class="card">
@@ -53,7 +62,7 @@
 											<td>{{$sale->quantity}}</td>
 											<td>{{ $sale->destination ?? '' }}</td>
 											<td>{{ isset($sale->product) && isset($sale->product->lote) ? $sale->product->lote : '' }}</td>
-                                            <td>{{date_format(date_create($sale->created_at),"d M, Y")}}</td>
+										<td>{{ \Carbon\Carbon::parse($sale->created_at)->locale('es')->translatedFormat('d F, Y') }}</td>
                                         </tr>
                                     @endif
                                 @endforeach
@@ -112,7 +121,10 @@
 @push('page-js')
 <script>
     $(document).ready(function(){
-        $('#sales-table').DataTable({
+		var reportFrom = "{{ isset($from_date) ? \Carbon\Carbon::parse($from_date)->locale('es')->translatedFormat('d F, Y') : '' }}";
+		var reportTo = "{{ isset($to_date) ? \Carbon\Carbon::parse($to_date)->locale('es')->translatedFormat('d F, Y') : '' }}";
+
+		$('#sales-table').DataTable({
 			dom: 'Bfrtip',		
 			buttons: [
 				{
@@ -127,10 +139,17 @@
 								columns: "thead th:not(.action-btn)"
 							},
 							customize: function (doc) {
-								// Quitar título automático del PDF
 								doc.info = { title: '' };
+								// Insertar rango de fechas arriba si existe
+								if(reportFrom && reportTo){
+									doc.content.unshift({
+										text: 'Desde: ' + reportFrom + '   Hasta: ' + reportTo,
+										margin: [0, 0, 0, 8],
+										fontSize: 11
+									});
+								}
 
-								// Quitar títulos agregados por DataTables
+								// Quitar títulos agregados por DataTables (si los hubiera)
 								doc.content = doc.content.filter(function(item) {
 									return !(item.style === 'title' || item.style === 'header' || item.fontSize >= 14);
 								});
@@ -145,10 +164,21 @@
 							},
 							customize: function (xlsx) {
 								var sheet = xlsx.xl.worksheets['sheet1.xml'];
-
-								// Eliminar títulos automáticos (celda A1)
-								$('row c[r^="A1"]', sheet).each(function () {
-									$(this).text('');
+								// Insertar rango de fechas en la celda A1 si existe
+								if(reportFrom && reportTo){
+									// Si existe una celda A1, reemplazar su texto; si no, crearla
+									var info = 'Desde: ' + reportFrom + '   Hasta: ' + reportTo;
+									var $cell = $('row c[r^="A1"] t', sheet);
+									if($cell.length){
+										$cell.text(info);
+									} else {
+										// insertar nueva fila al inicio
+										$('sheetData', sheet).prepend('<row r="1"><c r="A1" t="inlineStr"><is><t>'+info+'</t></is></c></row>');
+									}
+								}
+								// Quitar título automático si DataTables lo agrega
+								$('row c[r^="A2"]', sheet).each(function () {
+									// dejar A2 tal cual (tabla seguirá debajo)
 								});
 							}
 						},
@@ -161,11 +191,13 @@
 							},
 							customize: function (csv) {
 								let lines = csv.split("\n");
-
 								// Si la primera línea es un título, se elimina
 								if (lines[0].toLowerCase().includes("reporte") ||
 									lines[0].toLowerCase().includes("data")) {
 									lines.shift();
+								}
+								if(reportFrom && reportTo){
+									lines.unshift('Desde: ' + reportFrom + '   Hasta: ' + reportTo);
 								}
 
 								return lines.join("\n");
@@ -181,6 +213,11 @@
 							customize: function (win) {
 								// Eliminar encabezado H1 generado por DataTables
 								$(win.document.body).find('h1').remove();
+
+								// Insertar rango de fechas arriba del documento si existe
+								if(reportFrom && reportTo){
+									$(win.document.body).prepend('<div style="text-align:left; font-weight:600; margin-bottom:8px;">Desde: '+reportFrom+' &nbsp;&nbsp; Hasta: '+reportTo+'</div>');
+								}
 
 								// Eliminar textos de gran tamaño
 								$(win.document.body).find('*').each(function() {

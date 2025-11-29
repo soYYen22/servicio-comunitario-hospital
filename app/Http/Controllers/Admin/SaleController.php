@@ -303,9 +303,11 @@ class SaleController extends Controller
             'to_date' => 'required',
         ]);
         $title = 'Reportes de Salidas';
-        $sales = Sale::whereBetween(DB::raw('DATE(created_at)'), array($request->from_date, $request->to_date))->get();
+        $from_date = $request->from_date;
+        $to_date = $request->to_date;
+        $sales = Sale::whereBetween(DB::raw('DATE(created_at)'), array($from_date, $to_date))->get();
         return view('admin.sales.reports',compact(
-            'sales','title'
+            'sales','title','from_date','to_date'
         ));
     }
 

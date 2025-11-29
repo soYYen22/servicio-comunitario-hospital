@@ -217,9 +217,11 @@ class PurchaseController extends Controller
             'to_date' => 'required'
         ]);
         $title = 'Reportes De Entradas';
-        $purchases = Purchase::whereBetween(DB::raw('DATE(created_at)'), array($request->from_date, $request->to_date))->get();
+        $from_date = $request->from_date;
+        $to_date = $request->to_date;
+        $purchases = Purchase::whereBetween(DB::raw('DATE(created_at)'), array($from_date, $to_date))->get();
         return view('admin.purchases.reports',compact(
-            'purchases','title'
+            'purchases','title','from_date','to_date'
         ));
     }
 
