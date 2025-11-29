@@ -50,7 +50,7 @@
                                             </button>
                                         </a>
                                         @endif
-                                        <form action="{{route('backup.destroy',$b['file_name'])}}?disk={{ $b['disk'] }}" method="post">
+                                        <form action="{{route('backup.destroy',$b['file_name'])}}?disk={{ $b['disk'] }}&path={{ urlencode($b['file_path']) }}" method="post">
                                             @csrf
                                             @method("DELETE")
                                             <button title="Eliminar respaldo" class="btn btn-danger" type="submit">

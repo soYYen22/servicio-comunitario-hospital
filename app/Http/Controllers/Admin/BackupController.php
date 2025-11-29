@@ -34,10 +34,10 @@ class BackupController extends Controller
             // make an array of backup files, with their filesize and creation date
             foreach ($files as $k => $f) {
                 // only take the zip files into account
-                if (substr($f, -4) == '.zip' && $disk->exists($f)) {
+                    if (substr($f, -4) == '.zip' && $disk->exists($f)) {
                     $this->data['backups'][] = [
                         'file_path'     => $f,
-                        'file_name'     => str_replace('backups/', '', $f),
+                        'file_name'     => str_replace(config('backup.backup.name', 'backups').'/', '', $f),
                         'file_size'     => $disk->size($f),
                         'last_modified' => $disk->lastModified($f),
                         'disk'          => $disk_name,
@@ -91,17 +91,23 @@ class BackupController extends Controller
     /**
      * Downloads a backup zip file.
      */
-    public function download()
+    public function download(Request $request)
     {
-        $disk = Storage::disk(Request::input('disk'));
-        $file_name = Request::input('file_name');
+        $disk = Storage::disk($request->input('disk'));
+        $file_name = $request->input('file_name');
+        $file_path = $request->input('path');
+        // if path not provided, build it from configured backup name and filename
+        if (empty($file_path) && $file_name) {
+            $backupName = config('backup.backup.name', 'backups');
+            $file_path = trim($backupName, '/').'/'.ltrim($file_name, '/');
+        }
         $adapter = $disk->getDriver()->getAdapter();
 
         if ($adapter instanceof Local) {
-            $storage_path = $disk->getDriver()->getAdapter()->getPathPrefix();
+            $storage_path = $adapter->getPathPrefix();
 
-            if ($disk->exists($file_name)) {
-                return response()->download($storage_path.$file_name);
+            if ($disk->exists($file_path)) {
+                return response()->download($storage_path.$file_path);
             } else {
                 abort(404, trans('backup.backup_doesnt_exist'));
             }
@@ -118,13 +124,20 @@ class BackupController extends Controller
      * @param  file $file_name
      * @return \Illuminate\Http\Response
      */
-    public function destroy($file_name)
+    public function destroy(Request $request, $file_name)
     {
-        $disk = Storage::disk(Request::input('disk'));
+        $disk = Storage::disk($request->input('disk'));
 
-        if ($disk->exists($file_name)) {
-            $disk->delete($file_name);
-            $notification = notify('backup created successfully');
+        // try to use explicit path param if available, otherwise build from config backup name
+        $file_path = $request->input('path');
+        if (empty($file_path) && $file_name) {
+            $backupName = config('backup.backup.name', 'backups');
+            $file_path = trim($backupName, '/').'/'.ltrim($file_name, '/');
+        }
+
+        if ($disk->exists($file_path)) {
+            $disk->delete($file_path);
+            $notification = notify('backup deleted successfully');
             return back()->with($notification);
         } else {
             abort(404, trans('backup.backup_doesnt_exist'));
