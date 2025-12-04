@@ -22,7 +22,16 @@
 @section('content')
 <div class="row">
 	<div class="col-md-12">
-	
+
+		{{-- Mostrar rango de fechas si existen --}}
+		@if(isset($from_date) && isset($to_date))
+			<div class="mb-3" style="text-align: left;">
+				<strong>Desde:</strong> {{ \Carbon\Carbon::parse($from_date)->locale('es')->translatedFormat('d F, Y') }}
+				&nbsp;&nbsp;
+				<strong>Hasta:</strong> {{ \Carbon\Carbon::parse($to_date)->locale('es')->translatedFormat('d F, Y') }}
+			</div>
+		@endif
+
 		@isset($sales)
             <!--  Reporte de Ventas -->
             <div class="card">
@@ -30,12 +39,13 @@
                     <div class="table-responsive">
                         <table id="sales-table" class="datatable table table-hover table-center mb-0">
                             <thead>
-                                <tr>
-                                    <th>Nombre del Producto</th>
-                                    <th>Cantidad</th>
-                                    <th>Precio Total</th>
-                                    <th>Fecha</th>
-                                </tr>
+								<tr>
+									<th>Nombre del Producto</th>
+									<th>Cantidad</th>
+								<th>Destino</th>
+									<th>Lote</th>
+									<th>Fecha</th>
+								</tr>
                             </thead>
                             <tbody>
                                 @foreach ($sales as $sale)
@@ -49,9 +59,10 @@
                                                     </span>
                                                 @endif
                                             </td>
-                                            <td>{{$sale->quantity}}</td>
-											<td>{{ (floor($sale->total_price) == $sale->total_price) ? intval($sale->total_price) : rtrim(rtrim(number_format($sale->total_price, 2, '.', ''), '0'), '.') }}</td>
-                                            <td>{{date_format(date_create($sale->created_at),"d M, Y")}}</td>
+											<td>{{$sale->quantity}}</td>
+											<td>{{ $sale->destination ?? '' }}</td>
+											<td>{{ isset($sale->product) && isset($sale->product->lote) ? $sale->product->lote : '' }}</td>
+										<td>{{ \Carbon\Carbon::parse($sale->created_at)->locale('es')->translatedFormat('d F, Y') }}</td>
                                         </tr>
                                     @endif
                                 @endforeach
@@ -110,38 +121,114 @@
 @push('page-js')
 <script>
     $(document).ready(function(){
-        $('#sales-table').DataTable({
+		var reportFrom = "{{ isset($from_date) ? \Carbon\Carbon::parse($from_date)->locale('es')->translatedFormat('d F, Y') : '' }}";
+		var reportTo = "{{ isset($to_date) ? \Carbon\Carbon::parse($to_date)->locale('es')->translatedFormat('d F, Y') : '' }}";
+
+		$('#sales-table').DataTable({
 			dom: 'Bfrtip',		
 			buttons: [
 				{
-				extend: 'collection',
-				text: 'Exportar Datos',
-				buttons: [
-					{
-						extend: 'pdf',
-						exportOptions: {
-							columns: "thead th:not(.action-btn)"
+					extend: 'collection',
+					text: 'Exportar Datos',
+					buttons: [
+
+						/** -------------------- PDF -------------------- **/
+						{
+							extend: 'pdf',
+							exportOptions: {
+								columns: "thead th:not(.action-btn)"
+							},
+							customize: function (doc) {
+								doc.info = { title: '' };
+								// Insertar rango de fechas arriba si existe
+								if(reportFrom && reportTo){
+									doc.content.unshift({
+										text: 'Desde: ' + reportFrom + '   Hasta: ' + reportTo,
+										margin: [0, 0, 0, 8],
+										fontSize: 11
+									});
+								}
+
+								// Quitar títulos agregados por DataTables (si los hubiera)
+								doc.content = doc.content.filter(function(item) {
+									return !(item.style === 'title' || item.style === 'header' || item.fontSize >= 14);
+								});
+							}
+						},
+
+						/** -------------------- EXCEL -------------------- **/
+						{
+							extend: 'excel',
+							exportOptions: {
+								columns: "thead th:not(.action-btn)"
+							},
+							customize: function (xlsx) {
+								var sheet = xlsx.xl.worksheets['sheet1.xml'];
+								// Insertar rango de fechas en la celda A1 si existe
+								if(reportFrom && reportTo){
+									// Si existe una celda A1, reemplazar su texto; si no, crearla
+									var info = 'Desde: ' + reportFrom + '   Hasta: ' + reportTo;
+									var $cell = $('row c[r^="A1"] t', sheet);
+									if($cell.length){
+										$cell.text(info);
+									} else {
+										// insertar nueva fila al inicio
+										$('sheetData', sheet).prepend('<row r="1"><c r="A1" t="inlineStr"><is><t>'+info+'</t></is></c></row>');
+									}
+								}
+								// Quitar título automático si DataTables lo agrega
+								$('row c[r^="A2"]', sheet).each(function () {
+									// dejar A2 tal cual (tabla seguirá debajo)
+								});
+							}
+						},
+
+						/** -------------------- CSV -------------------- **/
+						{
+							extend: 'csv',
+							exportOptions: {
+								columns: "thead th:not(.action-btn)"
+							},
+							customize: function (csv) {
+								let lines = csv.split("\n");
+								// Si la primera línea es un título, se elimina
+								if (lines[0].toLowerCase().includes("reporte") ||
+									lines[0].toLowerCase().includes("data")) {
+									lines.shift();
+								}
+								if(reportFrom && reportTo){
+									lines.unshift('Desde: ' + reportFrom + '   Hasta: ' + reportTo);
+								}
+
+								return lines.join("\n");
+							}
+						},
+
+						/** -------------------- PRINT -------------------- **/
+						{
+							extend: 'print',
+							exportOptions: {
+								columns: "thead th:not(.action-btn)"
+							},
+							customize: function (win) {
+								// Eliminar encabezado H1 generado por DataTables
+								$(win.document.body).find('h1').remove();
+
+								// Insertar rango de fechas arriba del documento si existe
+								if(reportFrom && reportTo){
+									$(win.document.body).prepend('<div style="text-align:left; font-weight:600; margin-bottom:8px;">Desde: '+reportFrom+' &nbsp;&nbsp; Hasta: '+reportTo+'</div>');
+								}
+
+								// Eliminar textos de gran tamaño
+								$(win.document.body).find('*').each(function() {
+									if (parseInt($(this).css('font-size')) >= 18) {
+										$(this).remove();
+									}
+								});
+							}
 						}
-					},
-					{
-						extend: 'excel',
-						exportOptions: {
-							columns: "thead th:not(.action-btn)"
-						}
-					},
-					{
-						extend: 'csv',
-						exportOptions: {
-							columns: "thead th:not(.action-btn)"
-						}
-					},
-					{
-						extend: 'print',
-						exportOptions: {
-							columns: "thead th:not(.action-btn)"
-						}
-					}
-				]
+
+					]
 				}
 			]
 		});

@@ -10,9 +10,9 @@ class Purchase extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product','category_id','supplier_id',
-        'quantity','expiry_date',
-        'image'
+           'product','category_id','supplier_id',
+           'cost_price','quantity','expiry_date',
+           'entry_date','image'
     ];
 
     public function supplier(){

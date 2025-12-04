@@ -16,8 +16,8 @@ class CreateProductsTable extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('purchase_id')->nullable()->constrained()->onDelete("cascade");
-            $table->decimal('price');
-            $table->decimal('discount')->default(0);
+            $table->string('lote');
+            // $table->decimal('discount')->default(0);
             $table->text('description')->nullable();
             $table->enum('almacen', ['farmacia', 'deposito'])->default('farmacia');
             $table->softDeletes();

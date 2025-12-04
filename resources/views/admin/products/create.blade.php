@@ -43,13 +43,10 @@
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="form-group">
-                                    <label>Precio de venta <span class="text-danger">*</span></label>
-                                    <input class="form-control" type="text" name="price" value="{{ old('price') }}">
+                                    <label>Lote <span class="text-danger">*</span></label>
+                                    <input class="form-control" type="text" name="lote" value="{{ old('lote') }}">
                                 </div>
                             </div>
-
-                            <!-- Descuento eliminado -->
-                            
                         </div>
                     </div>
 
@@ -61,7 +58,6 @@
                                     <textarea class="form-control service-desc" name="description">{{old('description')}}</textarea>
                                 </div>
                             </div>
-                            
                         </div>
                     </div>
                     

@@ -46,13 +46,15 @@
 						<div class="row">
 							<div class="col-lg-6">
 								<div class="form-group">
-									<label>Precio de venta <span class="text-danger">*</span></label>
-									<input class="form-control" type="text" name="price" value="{{ old('price', isset($product) ? (float)$product->price : '') }}">
+									<label>Lote <span class="text-danger">*</span></label>
+
+									@php
+										$displayLote = old('lote') ?? $product->lote ?? '';
+									@endphp
+
+									<input class="form-control" type="text" name="lote" value="{{ $displayLote }}">
 								</div>
 							</div>
-	
-							<!-- Descuento eliminado -->
-							
 						</div>
 					</div>
 	
@@ -61,7 +63,7 @@
 							<div class="col-lg-12">
 								<div class="form-group">
 									<label>Descripción <span class="text-danger">*</span></label>
-									<textarea class="form-control service-desc" value="{{$product->description}}" name="description">{{$product->description}}</textarea>
+									<textarea class="form-control service-desc" name="description">{{ old('description', $product->description) }}</textarea>
 								</div>
 							</div>
 							
@@ -78,7 +80,6 @@
 	</div>			
 </div>
 @endsection
-
 
 @push('page-js')
 	

@@ -32,10 +32,11 @@
 							<tr>
 								<th>Nombre del producto</th>
 								<th>Categoría</th>
-								<th>Precio</th>
+								<th>Lote</th>
 								<th>Cantidad</th>
 								<!-- Descuento eliminado -->
 								<th>Fecha de vencimiento</th>
+                                <th>Fecha de entrada</th>
 								<th class="action-btn">Acción</th>
 							</tr>
 						</thead>
@@ -64,10 +65,11 @@
             columns: [
                 {data: 'product', name: 'product'},
                 {data: 'category', name: 'category'},
-                {data: 'price', name: 'price'},
+                {data: 'lote', name: 'lote'},
                 {data: 'quantity', name: 'quantity'},
 				// Descuento eliminado
 				{data: 'expiry_date', name: 'expiry_date'},
+					{data: 'entry_date', name: 'entry_date'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });

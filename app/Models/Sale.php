@@ -11,7 +11,7 @@ class Sale extends Model
     use HasFactory,SoftDeletes;
 
     protected $fillable = [
-        'product_id','quantity','total_price'
+        'product_id','quantity','total_price','destination'
     ];
 
     public function product(){

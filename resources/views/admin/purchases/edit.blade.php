@@ -6,10 +6,10 @@
 
 @push('page-header')
 <div class="col-sm-12">
-	<h3 class="page-title">Editar compra</h3>
+	<h3 class="page-title">Editar Entrada</h3>
 	<ul class="breadcrumb">
 		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Panel</a></li>
-		<li class="breadcrumb-item active">Editar compra</li>
+		<li class="breadcrumb-item active">Editar Entrada</li>
 	</ul>
 </div>
 @endpush
@@ -57,13 +57,24 @@
 				
 				<div class="service-fields mb-3">
 					<div class="row">
-						<!-- Precio de costo eliminado -->
-						<div class="col-lg-6">
-							<div class="form-group">
-								<label>Cantidad <span class="text-danger">*</span></label>
-								<input class="form-control" value="{{$purchase->quantity}}" type="text" name="quantity">
+							<!-- Precio de costo -->
+							<div class="col-lg-6">
+								<div class="form-group">
+									<label>Lote <span class="text-danger">*</span></label>
+									@php
+										$displayLote = old('lote') ?? (isset($purchase->purchaseProduct) && isset($purchase->purchaseProduct->lote) ? $purchase->purchaseProduct->lote : '') ?? '';
+									@endphp
+									<input class="form-control" type="text" name="lote" value="{{ $displayLote }}">
+									<input type="hidden" name="lot" value="{{ $displayLote }}">
+								</div>
 							</div>
-						</div>
+
+							<div class="col-lg-6">
+								<div class="form-group">
+									<label>Cantidad <span class="text-danger">*</span></label>
+									<input class="form-control" value="{{$purchase->quantity}}" type="text" name="quantity">
+								</div>
+							</div>
 					</div>
 				</div>
 
@@ -75,6 +86,12 @@
 								<input class="form-control" value="{{$purchase->expiry_date}}" type="date" name="expiry_date">
 							</div>
 						</div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label>Fecha de entrada <span class="text-danger">*</span></label>
+								<input class="form-control" value="{{$purchase->entry_date}}" type="date" name="entry_date" required min="{{ \Carbon\Carbon::now(config('app.timezone'))->subDay()->toDateString() }}">
+                            </div>
+                        </div>
 						<div class="col-lg-6">
 							<div class="form-group">
 								<label>Imagen del medicamento</label>

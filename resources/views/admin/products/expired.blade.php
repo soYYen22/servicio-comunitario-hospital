@@ -29,7 +29,7 @@
 							<tr>
 								<th>Nombre de marca</th>
 								<th>Categoría</th>
-								<th>Precio</th>
+								<th>Lote</th>
 								<th>Cantidad</th>
 								<th>Fecha de vencimiento</th>
 								<th class="action-btn">Acción</th>
@@ -60,7 +60,7 @@
             columns: [
                 {data: 'product', name: 'product'},
                 {data: 'category', name: 'category'},
-                {data: 'price', name: 'price'},
+                {data: 'lote', name: 'lote'},
                 {data: 'quantity', name: 'quantity'},
 				{data: 'expiry_date', name: 'expiry_date'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},

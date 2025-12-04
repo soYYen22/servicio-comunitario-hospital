@@ -6,10 +6,10 @@
 
 @push('page-header')
 <div class="col-sm-12">
-	<h3 class="page-title">Editar Venta</h3>
+	<h3 class="page-title">Editar Salida</h3>
 	<ul class="breadcrumb">
 		<li class="breadcrumb-item"><a href="{{route('dashboard')}}">Panel Principal</a></li>
-		<li class="breadcrumb-item active">Editar Venta</li>
+		<li class="breadcrumb-item active">Editar Salida</li>
 	</ul>
 </div>
 @endpush
@@ -42,6 +42,12 @@
 							<div class="form-group">
 								<label>Cantidad</label>
 								<input type="number" class="form-control edit_quantity" value="{{$sale->quantity ?? '1'}}" name="quantity">
+							</div>
+						</div>
+						<div class="col-12">
+							<div class="form-group">
+								<label>Destino <span class="text-danger">*</span></label>
+								<input type="text" class="form-control edit_destination" value="{{$sale->destination ?? ''}}" name="destination" required maxlength="255">
 							</div>
 						</div>
 					</div>

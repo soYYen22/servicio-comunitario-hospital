@@ -29,28 +29,37 @@
 						<div class="row">
 							<div class="col-lg-4">
 								<div class="form-group">
-									<label>Nombre del medicamento <span class="text-danger">*</span></label>
-									<input class="form-control" type="text" name="product" >
+											<label>Nombre del medicamento <span class="text-danger">*</span></label>
+											<input class="form-control" type="text" name="product" >
+											@error('product')
+												<span class="text-danger">{{ $message }}</span>
+											@enderror
 								</div>
 							</div>
 							<div class="col-lg-4">
 								<div class="form-group">
-									<label>Categoría <span class="text-danger">*</span></label>
-									<select class="select2 form-select form-control" name="category"> 
-										@foreach ($categories as $category)
-											<option value="{{$category->id}}">{{$category->name}}</option>
-										@endforeach
-									</select>
+											<label>Categoría <span class="text-danger">*</span></label>
+											<select class="select2 form-select form-control" name="category"> 
+												@foreach ($categories as $category)
+													<option value="{{$category->id}}">{{$category->name}}</option>
+												@endforeach
+											</select>
+											@error('category')
+												<span class="text-danger">{{ $message }}</span>
+											@enderror
 								</div>
 							</div>
 							<div class="col-lg-4">
 								<div class="form-group">
-									<label>Proveedor <span class="text-danger">*</span></label>
-									<select class="select2 form-select form-control" name="supplier"> 
-										@foreach ($suppliers as $supplier)
-											<option value="{{$supplier->id}}">{{$supplier->name}}</option>
-										@endforeach
-									</select>
+											<label>Proveedor <span class="text-danger">*</span></label>
+											<select class="select2 form-select form-control" name="supplier"> 
+												@foreach ($suppliers as $supplier)
+													<option value="{{$supplier->id}}">{{$supplier->name}}</option>
+												@endforeach
+											</select>
+											@error('supplier')
+												<span class="text-danger">{{ $message }}</span>
+											@enderror
 								</div>
 							</div>
 						</div>
@@ -58,11 +67,16 @@
 					
 					<div class="service-fields mb-3">
 						<div class="row">
-							<!-- Precio de costo eliminado -->
+							<!-- Precio de costo -->
+
+
 							<div class="col-lg-6">
 								<div class="form-group">
-									<label>Cantidad <span class="text-danger">*</span></label>
-									<input class="form-control" type="text" name="quantity">
+											<label>Cantidad <span class="text-danger">*</span></label>
+											<input class="form-control" type="text" name="quantity">
+											@error('quantity')
+												<span class="text-danger">{{ $message }}</span>
+											@enderror
 								</div>
 							</div>
 						</div>
@@ -72,14 +86,29 @@
 						<div class="row">
 							<div class="col-lg-6">
 								<div class="form-group">
-									<label>Fecha de vencimiento <span class="text-danger">*</span></label>
-									<input class="form-control" type="date" name="expiry_date">
+											<label>Fecha de vencimiento <span class="text-danger">*</span></label>
+											<input class="form-control" type="date" name="expiry_date">
+											@error('expiry_date')
+												<span class="text-danger">{{ $message }}</span>
+											@enderror
 								</div>
 							</div>
+	                        <div class="col-lg-6">
+	                            <div class="form-group">
+										<label>Fecha de entrada <span class="text-danger">*</span></label>
+										<input class="form-control" type="date" name="entry_date" required min="{{ \Carbon\Carbon::now(config('app.timezone'))->subDay()->toDateString() }}">
+										@error('entry_date')
+											<span class="text-danger">{{ $message }}</span>
+										@enderror
+	                            </div>
+	                        </div>
 							<div class="col-lg-6">
 								<div class="form-group">
-									<label>Imagen del medicamento</label>
-									<input type="file" name="image" class="form-control">
+											<label>Imagen del medicamento</label>
+											<input type="file" name="image" class="form-control">
+											@error('image')
+												<span class="text-danger">{{ $message }}</span>
+											@enderror
 								</div>
 							</div>
 						</div>

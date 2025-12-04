@@ -23,20 +23,63 @@ class SaleController extends Controller
     {
         $title = 'sales';
         if($request->ajax()){
-            $sales = Sale::latest();
-            return DataTables::of($sales)
-                    ->addIndexColumn()
-                    ->addColumn('product',function($sale){
-                        $image = '';
-                        if(!empty($sale->product)){
-                            $image = null;
-                            if(!empty($sale->product->purchase->image)){
-                                $image = '<span class="avatar avatar-sm mr-2">
-                                <img class="avatar-img" src="'.asset("storage/purchases/".$sale->product->purchase->image).'" alt="image">
-                                </span>';
+                    $sales = Sale::with(['product', 'product.purchase'])->latest();
+                    return DataTables::of($sales)
+                        ->filter(function ($query) use ($request) {
+                            if ($request->has('search') && isset($request->search['value']) && $request->search['value'] !== '') {
+                                $keyword = trim($request->search['value']);
+
+                                $query->where(function($q) use ($keyword) {
+                                    // If the keyword is numeric, match quantity exactly or cast to text for partial matches
+                                    if (is_numeric($keyword)) {
+                                        // If the user searches a number, match quantity exactly only
+                                        $q->where('quantity', intval($keyword));
+                                    } else {
+                                        // Non-numeric: try partial match on quantity as text as well
+                                        $q->whereRaw("CAST(quantity AS TEXT) ILIKE ?", ["%{$keyword}%"]);
+
+                                        // Destination partial match
+                                        $q->orWhere('destination', 'ilike', "%{$keyword}%");
+
+                                        // Search in related purchase.product (product name) - partial
+                                        $q->orWhereHas('product.purchase', function($q2) use ($keyword) {
+                                            $q2->where('product', 'ilike', "%{$keyword}%");
+                                        });
+
+                                        // Search in product.lote
+                                        $q->orWhereHas('product', function($q3) use ($keyword) {
+                                            $q3->where('lote', 'ilike', "%{$keyword}%");
+                                        });
+                                    }
+                                });
                             }
-                            return $sale->product->purchase->product. ' ' . $image;
-                        }                 
+                        })
+                        ->addIndexColumn()
+                        ->addColumn('product',function($sale){
+                            $image = '';
+                            if(!empty($sale->product)){
+                                $image = null;
+                                if(!empty($sale->product->purchase) && !empty($sale->product->purchase->image)){
+                                    $image = '<span class="avatar avatar-sm mr-2">
+                                    <img class="avatar-img" src="'.asset("storage/purchases/".$sale->product->purchase->image).'" alt="image">
+                                    </span>';
+                                }
+                                return $sale->product->purchase->product. ' ' . $image;
+                            }
+                        })
+                        ->addColumn('lote', function($sale) {
+                            // Mostrar el lote del producto si existe
+                            return $sale->product && isset($sale->product->lote) ? $sale->product->lote : '';
+                        })
+                    ->addColumn('destination', function($sale){
+                        return isset($sale->destination) ? $sale->destination : '';
+                    })
+                    ->addColumn('price', function($sale){
+                        if(!empty($sale->product) && isset($sale->product->price)){
+                            $v = $sale->product->price;
+                            return (floor($v) == $v) ? (int)$v : rtrim(rtrim(number_format($v, 2, '.', ''), '0'), '.');
+                        }
+                        return '';
                     })
                     ->addColumn('total_price',function($sale){                   
                         // format: no trailing .00, keep decimals when needed
@@ -92,7 +135,8 @@ class SaleController extends Controller
     {
         $this->validate($request,[
             'product'=>'required',
-            'quantity'=>'required|integer|min:1'
+            'quantity'=>'required|integer|min:1',
+            'destination' => 'required|string|max:255'
         ]);
         $sold_product = Product::find($request->product);
         
@@ -103,31 +147,34 @@ class SaleController extends Controller
         $purchased_item = Purchase::find($sold_product->purchase->id);
         $new_quantity = ($purchased_item->quantity) - ($request->quantity);
         $notification = '';
-        if (!($new_quantity < 0)){
 
-            $purchased_item->update([
-                'quantity'=>$new_quantity,
-            ]);
+        // If requested quantity exceeds available stock, return with an error notification
+        if ($new_quantity < 0) {
+            $notification = notify("No hay suficientes existencias para completar la salida.", 'danger');
+            return redirect()->back()->with($notification);
+        }
 
-            /**
-             * calcualting item's total price
-            **/
-            $total_price = (float) $request->quantity * (float) $sold_product->price;
-            Sale::create([
-                'product_id'=>$request->product,
-                'quantity'=>$request->quantity,
-                'total_price'=>$total_price,
-            ]);
+        // Update purchase quantity and create sale
+        $purchased_item->update([
+            'quantity' => $new_quantity,
+        ]);
 
-            $notification = notify("El Producto Ha Salido.");
-        } 
-        if($new_quantity <=1 && $new_quantity !=0){
-            // send notification 
+        // calculating item's total price
+        $total_price = (float) $request->quantity * (float) $sold_product->price;
+        Sale::create([
+            'product_id' => $request->product,
+            'quantity' => $request->quantity,
+            'total_price' => $total_price,
+            'destination' => $request->destination ?? null,
+        ]);
+
+        $notification = notify("El Producto Ha Salido.");
+
+        // Check low stock and notify only after a successful sale
+        if ($new_quantity <= 1 && $new_quantity != 0) {
             $product = Purchase::where('quantity', '<=', 1)->first();
             event(new PurchaseOutStock($product));
-            // end of notification 
-            $notification = notify("¡El producto se está agotando!");
-            
+            $notification = notify("¡El producto se está agotando!", 'warning');
         }
 
         return redirect()->route('sales.index')->with($notification);
@@ -161,46 +208,74 @@ class SaleController extends Controller
     {
         $this->validate($request,[
             'product'=>'required',
-            'quantity'=>'required|integer|min:1'
+            'quantity'=>'required|integer|min:1',
+            'destination' => 'required|string|max:255'
         ]);
-        $sold_product = Product::find($request->product);
-        /**
-         * update quantity of sold item from purchases
-        **/
-        $purchased_item = Purchase::find($sold_product->purchase->id);
-        if(!empty($request->quantity)){
-            $new_quantity = ($purchased_item->quantity) - ($request->quantity);
-        }
-        $new_quantity = $sale->quantity;
+
+        $newProduct = Product::find($request->product);
+        $oldProduct = $sale->product;
+
         $notification = '';
-        if (!($new_quantity < 0)){
-            $purchased_item->update([
-                'quantity'=>$new_quantity,
-            ]);
 
-            /**
-             * calcualting item's total price
-            **/
-            if(!empty($request->quantity)){
-                $total_price = (float) $request->quantity * (float) $sold_product->price;
+        try {
+            $updated = DB::transaction(function() use ($sale, $oldProduct, $newProduct, $request, &$notification) {
+            $oldQty = (int) ($sale->quantity ?? 0);
+            $newQty = (int) $request->quantity;
+
+            // If product changed: restore old purchase stock, then deduct from new purchase
+            if (!empty($oldProduct) && $oldProduct->purchase) {
+                $oldPurchase = $oldProduct->purchase;
+                $oldPurchase->update([
+                    'quantity' => ($oldPurchase->quantity ?? 0) + $oldQty,
+                ]);
             }
-            $total_price = $sale->total_price;
-            $sale->update([
-                'product_id'=>$request->product,
-                'quantity'=>$request->quantity,
-                'total_price'=>$total_price,
+
+            if (empty($newProduct) || empty($newProduct->purchase)) {
+                throw new \Exception('Producto o compra asociada no encontrada.');
+            }
+
+            $newPurchase = $newProduct->purchase;
+
+            // Compute final quantity after applying the update: start from current purchase quantity
+            // Current purchase quantity already reflects previous sales, so add back oldQty only if product didn't change.
+            // Simpler and safe approach: set final = current + (oldProduct == newProduct ? oldQty : 0) - newQty
+            $finalQuantity = ($newPurchase->quantity ?? 0) - $newQty;
+
+            // If the product is the same as before, we've already restored oldQty above, so finalQuantity is correct.
+            // If the product changed, oldQty was restored to oldPurchase, and newPurchase does not include oldQty.
+            if ($finalQuantity < 0) {
+                throw new \Exception('Cantidad insuficiente en stock para la actualización.');
+            }
+
+            $newPurchase->update([
+                'quantity' => $finalQuantity,
             ]);
 
-            $notification = notify("El producto ha sido actualizado.");
-        } 
-        if($new_quantity <=1 && $new_quantity !=0){
-            // send notification 
-            $product = Purchase::where('quantity', '<=', 1)->first();
-            event(new PurchaseOutStock($product));
-            // end of notification 
-            $notification = notify("¡El producto se está agotando!");
-            
+            // Update sale
+            $total_price = (float) $newQty * (float) $newProduct->price;
+            $sale->update([
+                'product_id' => $newProduct->id,
+                'quantity' => $newQty,
+                'total_price' => $total_price,
+                'destination' => $request->destination ?? null,
+            ]);
+
+            if($finalQuantity <= 1 && $finalQuantity != 0){
+                $productLow = Purchase::where('quantity', '<=', 1)->first();
+                event(new PurchaseOutStock($productLow));
+                $notification = notify("¡El producto se está agotando!");
+            } else {
+                $notification = notify("El producto ha sido actualizado.");
+            }
+
+                return true;
+            });
+
+        } catch (\Exception $e) {
+            $notification = notify("No hay suficientes existencias para completar la salida.", 'danger');
+            return redirect()->back()->with($notification);
         }
+
         return redirect()->route('sales.index')->with($notification);
     }
 
@@ -228,9 +303,11 @@ class SaleController extends Controller
             'to_date' => 'required',
         ]);
         $title = 'Reportes de Salidas';
-        $sales = Sale::whereBetween(DB::raw('DATE(created_at)'), array($request->from_date, $request->to_date))->get();
+        $from_date = $request->from_date;
+        $to_date = $request->to_date;
+        $sales = Sale::whereBetween(DB::raw('DATE(created_at)'), array($from_date, $to_date))->get();
         return view('admin.sales.reports',compact(
-            'sales','title'
+            'sales','title','from_date','to_date'
         ));
     }
 
@@ -243,6 +320,19 @@ class SaleController extends Controller
      */
     public function destroy(Request $request)
     {
-        return Sale::findOrFail($request->id)->delete();
+        $sale = Sale::with('product.purchase')->findOrFail($request->id);
+
+        $deleted = DB::transaction(function() use ($sale) {
+            if (!empty($sale->product) && !empty($sale->product->purchase)) {
+                $purchase = $sale->product->purchase;
+                $purchase->update([
+                    'quantity' => ($purchase->quantity ?? 0) + ($sale->quantity ?? 0),
+                ]);
+            }
+
+            return $sale->delete();
+        });
+
+        return response()->json(['success' => (bool) $deleted]);
     }
 }

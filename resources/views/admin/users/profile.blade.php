@@ -170,3 +170,19 @@
 	</div>
 </div>
 @endsection
+
+@push('page-js')
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+	const roleMap = {
+		'admin':'Administrador', 'administrator':'Administrador', 'super-admin':'Super Administrador','superadmin':'Super Administrador',
+		'manager':'Gestor','user':'Usuario','cliente':'Cliente','editor':'Editor'
+	};
+	document.querySelectorAll('select[name="role"] option').forEach(function(opt){
+		const raw = String(opt.textContent || '').trim();
+		const key = raw.toLowerCase();
+		opt.textContent = roleMap[key] || roleMap[raw] || raw;
+	});
+});
+</script>
+@endpush

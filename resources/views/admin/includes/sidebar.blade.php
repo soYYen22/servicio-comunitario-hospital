@@ -19,7 +19,7 @@
 				
 				@can('view-products')
 				<li class="submenu">
-					<a href="#"><i class="fe fe-document"></i> <span> Productos</span> <span class="menu-arrow"></span></a>
+					<a href="#"><i class="fa fa-solid fa-notes-medical"></i> <span> Productos</span> </a>
 					<ul style="display: none;">
 						<li><a class="{{ route_is(('products.*')) ? 'active' : '' }}" href="{{route('products.index')}}">Productos</a></li>
 						@can('create-product')<li><a class="{{ route_is('products.create') ? 'active' : '' }}" href="{{route('products.create')}}">Agregar Producto</a></li>@endcan
@@ -31,7 +31,7 @@
 				
 				@can('view-purchase')
 				<li class="submenu">
-					<a href="#"><i class="fe fe-star-o"></i> <span> Entradas</span> <span class="menu-arrow"></span></a>
+					<a href="#"><i class="fa fa-sharp-duotone fa-thin fa-capsules"></i> <span> Entradas</span> </a>
 					<ul style="display: none;">
 						<li><a class="{{ route_is('purchases.*') ? 'active' : '' }}" href="{{route('purchases.index')}}">Entradas</a></li>
 						@can('create-purchase')
@@ -43,7 +43,7 @@
 
 				@can('view-sales')
 				<li class="submenu">
-					<a href="#"><i class="fe fe-activity"></i> <span> Salidas</span> <span class="menu-arrow"></span></a>
+					<a href="#"><i class="fa fa-solid fa-hospital"></i> <span> Salidas</span> </a>
 					<ul style="display: none;">
 						<li><a class="{{ route_is('sales.*') ? 'active' : '' }}" href="{{route('sales.index')}}">Salidas</a></li>
 						@can('create-sale')
@@ -55,7 +55,7 @@
 				
 				@can('view-supplier')
 				<li class="submenu">
-					<a href="#"><i class="fe fe-user"></i> <span> Proveedores</span> <span class="menu-arrow"></span></a>
+					<a href="#"><i class="fe fe-user"></i> <span> Proveedores</span> </a>
 					<ul style="display: none;">
 						<li><a class="{{ route_is('suppliers.*') ? 'active' : '' }}" href="{{route('suppliers.index')}}">Proveedores</a></li>
 						@can('create-supplier')<li><a class="{{ route_is('suppliers.create') ? 'active' : '' }}" href="{{route('suppliers.create')}}">Agregar Proveedor</a></li>@endcan
@@ -65,7 +65,7 @@
 
 				@can('view-reports')
 				<li class="submenu">
-					<a href="#"><i class="fe fe-document"></i> <span> Reportes</span> <span class="menu-arrow"></span></a>
+					<a href="#"><i class="fe fe-document"></i> <span> Reportes</span> </a>
 					<ul style="display: none;">
 						<li><a class="{{ route_is('sales.report') ? 'active' : '' }}" href="{{route('sales.report')}}">Reporte de Salida</a></li>
 						<li><a class="{{ route_is('purchases.report') ? 'active' : '' }}" href="{{route('purchases.report')}}">Reporte de Entrada</a></li>
@@ -75,7 +75,7 @@
 
 				@can('view-access-control')
 				<li class="submenu">
-					<a href="#"><i class="fe fe-lock"></i> <span> Control de Acceso</span> <span class="menu-arrow"></span></a>
+					<a href="#"><i class="fe fe-lock"></i> <span> Control de Acceso</span> </a>
 					<ul style="display: none;">
 						@can('view-permission')
 						<li><a class="{{ route_is('permissions.index') ? 'active' : '' }}" href="{{route('permissions.index')}}">Permisos</a></li>
@@ -96,9 +96,15 @@
 				<li class="{{ route_is('profile') ? 'active' : '' }}"> 
 					<a href="{{route('profile')}}"><i class="fe fe-user-plus"></i> <span>Perfil</span></a>
 				</li>
-				<li class="{{ route_is('backup.index') ? 'active' : '' }}"> 
-					<a href="{{route('backup.index')}}"><i class="material-icons">backup</i> <span>Copias de Seguridad</span></a>
-				</li>
+				@php
+				 		use Spatie\Permission\Models\Permission;
+				 		$backupPermissions = ['backup-app','backup-db'];
+				 		@endphp
+				 		@if(auth()->check() && Permission::whereIn('name',$backupPermissions)->exists() && auth()->user()->hasAnyPermission($backupPermissions))
+				 		<li class="{{ route_is('backup.index') ? 'active' : '' }}"> 
+				 			<a href="{{route('backup.index')}}"><i class="material-icons">backup</i> <span>Copias de Seguridad</span></a>
+				 		</li>
+				 		@endif
 				@can('view-settings')
 				<li class="{{ route_is('settings') ? 'active' : '' }}"> 
 					<a href="{{route('settings')}}">
