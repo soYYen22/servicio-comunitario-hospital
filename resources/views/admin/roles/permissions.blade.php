@@ -149,8 +149,10 @@ $(document).ready(function() {
 				'category':'Categoría','categoría':'Categoría','categoria':'Categoría',
 				'product':'Producto','producto':'Producto',
 				'supplier':'Proveedor','proveedor':'Proveedor',
-				'purchase':'Compra','compra':'Compra',
-				'sale':'Venta','venta':'Venta',
+				// Mostrar "purchases" (compras) como "Entrada" sólo visualmente
+				'purchase':'Entrada','compra':'Entrada','purchases':'Entrada','compras':'Entrada',
+				// Mostrar "sales" (ventas) como "Salida" sólo visualmente
+				'sale':'Salida','venta':'Salida','sales':'Salida','ventas':'Salida',
 				'settings':'Ajustes','setting':'Ajuste'
 			};
 			// split by non-alphanumeric separators
