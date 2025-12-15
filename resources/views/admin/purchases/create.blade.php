@@ -30,25 +30,21 @@
 							<div class="col-lg-4">
 								<div class="form-group">
 											<label>Nombre del medicamento <span class="text-danger">*</span></label>
-											<input class="form-control" type="text" name="product" >
+											<select class="select2 form-select form-control" name="product">
+												<option value="">Seleccione un producto</option>
+												@foreach($products as $p)
+													@php
+														$label = $p->product_name ?? optional($p->purchase)->product ?? '';
+													@endphp
+													<option value="{{ $p->id }}">{{ $label }}</option>
+												@endforeach
+											</select>
 											@error('product')
 												<span class="text-danger">{{ $message }}</span>
 											@enderror
 								</div>
 							</div>
-							<div class="col-lg-4">
-								<div class="form-group">
-											<label>Categoría <span class="text-danger">*</span></label>
-											<select class="select2 form-select form-control" name="category"> 
-												@foreach ($categories as $category)
-													<option value="{{$category->id}}">{{$category->name}}</option>
-												@endforeach
-											</select>
-											@error('category')
-												<span class="text-danger">{{ $message }}</span>
-											@enderror
-								</div>
-							</div>
+                            
 							<div class="col-lg-4">
 								<div class="form-group">
 											<label>Proveedor <span class="text-danger">*</span></label>
@@ -79,6 +75,35 @@
 											@enderror
 								</div>
 							</div>
+
+								<div class="col-lg-6">
+									<div class="form-group">
+										<label>Lote</label>
+										<div class="input-group">
+											<div class="input-group-prepend">
+												<div class="btn-group">
+													<button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+														<i class="fa fa-angle-left"></i>
+													</button>
+													<div class="dropdown-menu">
+														@isset($existingLotes)
+															@foreach($existingLotes as $lote)
+																<a class="dropdown-item lote-item" href="#" data-lote="{{ $lote }}">{{ $lote }}</a>
+															@endforeach
+														@endisset
+														@if(!isset($existingLotes) || count($existingLotes) === 0)
+															<span class="dropdown-item disabled">No hay lotes</span>
+														@endif
+													</div>
+												</div>
+											</div>
+											<input id="lote-input" class="form-control" type="text" name="lote" value="{{ old('lote') }}" placeholder="Escriba o seleccione un lote">
+										</div>
+										@error('lote')
+											<span class="text-danger">{{ $message }}</span>
+										@enderror
+									</div>
+								</div>
 						</div>
 					</div>
 
@@ -130,4 +155,14 @@
 	<!-- Datetimepicker JS -->
 	<script src="{{asset('assets/js/moment.min.js')}}"></script>
 	<script src="{{asset('assets/js/bootstrap-datetimepicker.min.js')}}"></script>	
+				<script>
+					$(document).ready(function(){
+						// Clicking an existing lote in dropdown sets the lote input value
+						$(document).on('click', '.lote-item', function(e){
+							e.preventDefault();
+							var lote = $(this).data('lote');
+							$('#lote-input').val(lote);
+						});
+					});
+				</script>
 @endpush

@@ -35,11 +35,12 @@ class DashboardController extends Controller
                 ])
                 ->options([]);
         
-        // Mostrar la cantidad total de unidades vencidas (sumatoria de `quantity` de purchases vencidas)
-        // En Postgres `quantity` puede estar almacenado como texto, por eso casteamos a INTEGER antes de sumar.
+        // Mostrar la cantidad de medicamentos distintos que están vencidos.
+        // Contamos valores distintos de la columna `product` entre las compras vencidas.
         $total_expired_products = (int) DB::table('purchases')
             ->whereDate('expiry_date', '<=', Carbon::today())
-            ->selectRaw('COALESCE(SUM(CAST(quantity AS INTEGER)), 0) as total')
+            ->whereNotNull('product')
+            ->selectRaw("COALESCE(COUNT(DISTINCT NULLIF(TRIM(product), '')), 0) as total")
             ->value('total');
         $latest_sales = Sale::whereDate('created_at','=',Carbon::now())->get();
         $out_of_stock = Purchase::where('quantity', '<=', 0)->count();

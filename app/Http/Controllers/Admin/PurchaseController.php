@@ -42,10 +42,26 @@ class PurchaseController extends Controller
                 })
                 // Agregar columna lote igual que en productos
                 ->addColumn('lote',function($purchase){
-                    if(!empty($purchase->purchaseProduct)){
+                    // Prefer the lote stored on the purchase itself if present
+                    if(!empty($purchase->lote)){
+                        return $purchase->lote;
+                    }
+
+                    // Then prefer the lote on the linked product (legacy behavior)
+                    if(!empty($purchase->purchaseProduct) && !empty($purchase->purchaseProduct->lote)){
                         return $purchase->purchaseProduct->lote;
                     }
-                    return '';
+
+                    // Fallback: search products table by product_name or linked purchase product
+                    try{
+                        $fallback = \App\Models\Product::where('product_name', $purchase->product)
+                            ->orWhereHas('purchase', function($q) use ($purchase){
+                                $q->where('product', $purchase->product);
+                            })->value('lote');
+                        return $fallback ?: '';
+                    }catch(\Exception $e){
+                        return '';
+                    }
                 })
                 ->addColumn('supplier',function($purchase){
                     return $purchase->supplier->name;
@@ -86,8 +102,11 @@ class PurchaseController extends Controller
         $title = 'create purchase';
         $categories = Category::get();
         $suppliers = Supplier::get();
+        $products = \App\Models\Product::with('purchase')->get();
+        // collect existing lotes so user can pick one when creating a purchase
+        $existingLotes = \App\Models\Purchase::whereNotNull('lote')->pluck('lote')->filter()->unique()->values();
         return view('admin.purchases.create',compact(
-            'title','categories','suppliers'
+            'title','categories','suppliers','products','existingLotes'
         ));
     }
 
@@ -101,12 +120,11 @@ class PurchaseController extends Controller
     {
             $minDate = Carbon::now(config('app.timezone'))->subDay()->toDateString();
             $this->validate($request,[
-                'product'=>'required|max:200',
-                'category'=>'required',
+                'product'=>'required|exists:products,id',
                 'quantity'=>'required|min:1',
                 'expiry_date'=>'required',
                 'supplier'=>'required',
-                'lot'=>'nullable|numeric',
+                    'lote'=>'nullable|string|max:255',
                 'image'=>'file|image|mimes:jpg,jpeg,png,gif',
                 'entry_date' => ['required', 'date', 'after_or_equal:'.$minDate],
             ], [
@@ -117,16 +135,36 @@ class PurchaseController extends Controller
             $imageName = time().'.'.$request->image->extension();
             $request->image->move(public_path('storage/purchases'), $imageName);
         }
-        Purchase::create([
-              'product'=>$request->product,
-              'category_id'=>$request->category,
-              'supplier_id'=>$request->supplier,
-              'cost_price'=>$request->cost_price,
-              'quantity'=>$request->quantity,
-              'expiry_date'=>$request->expiry_date,
-              'entry_date'=>$request->entry_date ?? date('Y-m-d'),
-              'image'=>$imageName,
-        ]);
+          // Obtener label del producto seleccionado (por id) para guardarlo en la compra
+          $productModel = \App\Models\Product::with('purchase')->find($request->product);
+          $productLabel = $productModel ? ($productModel->product_name ?? optional($productModel->purchase)->product) : $request->product;
+
+                    $purchase = Purchase::create([
+                            'product'=>$productLabel,
+                            'category_id'=> $productModel->category_id ?? null,
+                            'supplier_id'=>$request->supplier,
+                            'cost_price'=>$request->cost_price,
+                            'quantity'=>$request->quantity,
+                            'expiry_date'=>$request->expiry_date,
+                            'entry_date'=>$request->entry_date ?? date('Y-m-d'),
+                            'image'=>$imageName,
+                            'lote' => $request->lote ?? null,
+                ]);
+
+        // Vincular el registro en `products` (si existe) a esta nueva compra para
+        // que la columna 'lote' mostrada en la lista de entradas refleje el valor
+        // guardado en la tabla `products`.
+        try {
+            // productModel ya fue obtenido arriba (por id). Si existe, vincularlo.
+            if(isset($productModel) && $productModel){
+                $productModel->purchase_id = $purchase->id;
+                // Do NOT overwrite other products' lote when creating a new purchase.
+                // We keep product.lote untouched to avoid changing historical entries.
+                $productModel->save();
+            }
+        } catch (\Exception $e) {
+            // No detener el flujo si hay algún problema al vincular el producto.
+        }
         $notifications = notify("Se ha añadido la Entrada");
         return redirect()->route('purchases.index')->with($notifications);
     }
@@ -144,8 +182,9 @@ class PurchaseController extends Controller
         $title = 'edit purchase';
         $categories = Category::get();
         $suppliers = Supplier::get();
+        $existingLotes = \App\Models\Purchase::whereNotNull('lote')->pluck('lote')->filter()->unique()->values();
         return view('admin.purchases.edit',compact(
-            'title','purchase','categories','suppliers'
+            'title','purchase','categories','suppliers','existingLotes'
         ));
     }
 
@@ -161,7 +200,6 @@ class PurchaseController extends Controller
             $minDate = Carbon::now(config('app.timezone'))->subDay()->toDateString();
             $this->validate($request,[
                 'product'=>'required|max:200',
-                'category'=>'required',
                 'quantity'=>'required|min:1',
                 'expiry_date'=>'required',
                 'supplier'=>'required',
@@ -176,32 +214,22 @@ class PurchaseController extends Controller
             $imageName = time().'.'.$request->image->extension();
             $request->image->move(public_path('storage/purchases'), $imageName);
         }
+        // Prevent reducing purchase quantity below already sold amount
+        $sold = (int) ($purchase->sold ?? 0);
+        $newQty = (int) $request->quantity;
+        if($newQty < $sold){
+            $notifications = notify("No se puede establecer la cantidad a {$newQty} porque ya hay {$sold} salidas asociadas.", 'danger');
+            return redirect()->back()->with($notifications);
+        }
         $purchase->update([
             'product'=>$request->product,
-            'category_id'=>$request->category,
             'supplier_id'=>$request->supplier,
             'quantity'=>$request->quantity,
             'expiry_date'=>$request->expiry_date,
                 'entry_date'=>$request->entry_date,
             'image'=>$imageName,
+            'lote' => ($request->filled('lote') ? $request->lote : ($request->filled('lot') ? $request->lot : $purchase->lote)),
         ]);
-
-        // Si existe un Product relacionado, actualiza su campo 'lote' con el valor proporcionado.
-        // Acepta tanto el campo 'lote' (vista en español) como 'lot' (compatibilidad previa).
-        if($purchase->purchaseProduct){
-            $loteValue = null;
-            if($request->filled('lote')){
-                $loteValue = $request->lote;
-            } elseif($request->filled('lot')){
-                $loteValue = $request->lot;
-            }
-
-            if(!is_null($loteValue)){
-                $purchase->purchaseProduct()->update([
-                    'lote' => $loteValue,
-                ]);
-            }
-        }
         $notifications = notify("Entrada Actualizada");
         return redirect()->route('purchases.index')->with($notifications);
     }
@@ -219,9 +247,28 @@ class PurchaseController extends Controller
         $title = 'Reportes De Entradas';
         $from_date = $request->from_date;
         $to_date = $request->to_date;
-        $purchases = Purchase::whereBetween(DB::raw('DATE(created_at)'), array($from_date, $to_date))->get();
+        $purchases = Purchase::with('purchaseProduct','category','supplier')
+            ->whereBetween(DB::raw('DATE(created_at)'), array($from_date, $to_date))->get();
+
+        // Construir mapa de lotes por etiqueta de producto (product_name o purchase->product)
+        $loteByName = [];
+        try{
+            $allProducts = \App\Models\Product::with('purchase')->get();
+            foreach($allProducts as $p){
+                $label = $p->product_name ?? optional($p->purchase)->product ?? null;
+                if($label && isset($p->lote) && $p->lote !== null){
+                    // si hay múltiples, mantener el primero encontrado
+                    if(!isset($loteByName[$label])){
+                        $loteByName[$label] = $p->lote;
+                    }
+                }
+            }
+        }catch(\Exception $e){
+            $loteByName = [];
+        }
+
         return view('admin.purchases.reports',compact(
-            'purchases','title','from_date','to_date'
+            'purchases','title','from_date','to_date','loteByName'
         ));
     }
 
@@ -233,6 +280,35 @@ class PurchaseController extends Controller
      */
     public function destroy(Request $request)
     {
-        return Purchase::findOrFail($request->id)->delete();
+        $purchase = Purchase::findOrFail($request->id);
+
+        // Desvincular productos que referencian esta compra para evitar borrado por cascada
+        try{
+            \App\Models\Product::where('purchase_id', $purchase->id)->update(['purchase_id' => null]);
+        }catch(\Exception $e){
+            // no bloquear el borrado si falla la desvinculación
+        }
+
+        return $purchase->delete();
+    }
+
+    /**
+     * Hide purchase from expired listing only (non-destructive).
+     */
+    public function hideFromExpired(Request $request)
+    {
+        // Ensure the DB has the column; if not, return informative error so developer can run migrations
+        try{
+            if(!\Illuminate\Support\Facades\Schema::hasColumn('purchases','hidden_from_expired')){
+                return response()->json(['ok' => false, 'message' => 'Migration missing: run php artisan migrate to add hidden_from_expired column.'], 400);
+            }
+        }catch(\Exception $e){
+            return response()->json(['ok' => false, 'message' => 'Schema check failed.'], 500);
+        }
+
+        $purchase = Purchase::findOrFail($request->id);
+        $purchase->hidden_from_expired = true;
+        $purchase->save();
+        return response()->json(['ok' => true]);
     }
 }

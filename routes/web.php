@@ -47,6 +47,7 @@ Route::middleware(['auth'])->group(function(){
     Route::resource('categories',CategoryController::class)->only(['index','store','destroy']);
     Route::put('categories',[CategoryController::class,'update'])->name('categories.update');
     Route::resource('purchases',PurchaseController::class)->except('show');
+    Route::delete('purchases/{purchase}/hide-expired',[PurchaseController::class,'hideFromExpired'])->name('purchases.hideExpired');
     Route::get('purchases/reports',[PurchaseController::class,'reports'])->name('purchases.report');
     Route::post('purchases/reports',[PurchaseController::class,'generateReport']);
     Route::resource('products',ProductController::class)->except('show');

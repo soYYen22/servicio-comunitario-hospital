@@ -27,15 +27,12 @@
 						<div class="col-12">
 							<div class="form-group">
 								<label>Producto <span class="text-danger">*</span></label>
-								<select class="select2 form-select form-control edit_product" name="product"> 
-									@foreach ($products as $product)
-										@if (!empty($product->purchase))
-											@if (!($product->purchase->quantity <= 0))
-												<option {{($product->purchase->id == $sale->product->purchase_id) ? 'selected': ''}} value="{{$product->id}}">{{$product->purchase->product}}</option>
-											@endif
-										@endif
-									@endforeach
-								</select>
+								@php
+									$productLabel = $sale->product->product_name ?? optional($sale->product->purchase)->product ?? '';
+									$productId = $sale->product->id ?? '';
+								@endphp
+								<input type="text" class="form-control" value="{{ $productLabel }}" disabled>
+								<input type="hidden" name="product" value="{{ $productId }}">
 							</div>
 						</div>
 						<div class="col-12">

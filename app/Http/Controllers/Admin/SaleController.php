@@ -10,6 +10,8 @@ use App\Events\PurchaseOutStock;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class SaleController extends Controller
 {
@@ -64,12 +66,10 @@ class SaleController extends Controller
                                     <img class="avatar-img" src="'.asset("storage/purchases/".$sale->product->purchase->image).'" alt="image">
                                     </span>';
                                 }
-                                return $sale->product->purchase->product. ' ' . $image;
+                                // Prefer the product_name stored on the Product model; fallback to the purchase.product label
+                                $label = $sale->product->product_name ?? optional($sale->product->purchase)->product ?? '';
+                                return $label . ' ' . $image;
                             }
-                        })
-                        ->addColumn('lote', function($sale) {
-                            // Mostrar el lote del producto si existe
-                            return $sale->product && isset($sale->product->lote) ? $sale->product->lote : '';
                         })
                     ->addColumn('destination', function($sale){
                         return isset($sale->destination) ? $sale->destination : '';
@@ -119,7 +119,39 @@ class SaleController extends Controller
     public function create()
     {
         $title = 'create sales';
-        $products = Product::get();
+        // Compute products that have non-expired stock > 0
+        $today = Carbon::now();
+        $available = [];
+        try{
+            $purchases = Purchase::where(function($q) use ($today){
+                $q->whereNull('expiry_date')->orWhereDate('expiry_date','>', $today);
+            })->get();
+            $sums = [];
+            foreach($purchases as $pu){
+                if(empty($pu->product)) continue;
+                $key = Str::ascii(mb_strtolower(trim($pu->product)));
+                if(!isset($sums[$key])) $sums[$key] = 0;
+                $sums[$key] += (int) $pu->quantity;
+            }
+
+            $allProducts = Product::with('purchase')->get();
+            foreach($allProducts as $p){
+                $labels = [];
+                if(!empty($p->product_name)) $labels[] = trim($p->product_name);
+                if(!empty($p->purchase) && !empty($p->purchase->product)) $labels[] = trim($p->purchase->product);
+                foreach($labels as $lab){
+                    $k = Str::ascii(mb_strtolower($lab));
+                    if(isset($sums[$k]) && $sums[$k] > 0){
+                        $available[] = $p;
+                        break;
+                    }
+                }
+            }
+        }catch(\Exception $e){
+            $available = Product::with('purchase')->get();
+        }
+
+        $products = collect($available);
         return view('admin.sales.create',compact(
             'title','products'
         ));
@@ -139,42 +171,92 @@ class SaleController extends Controller
             'destination' => 'required|string|max:255'
         ]);
         $sold_product = Product::find($request->product);
-        
-        /**update quantity of
-            sold item from
-         purchases
-        **/
-        $purchased_item = Purchase::find($sold_product->purchase->id);
-        $new_quantity = ($purchased_item->quantity) - ($request->quantity);
+        $toSell = (int)$request->quantity;
         $notification = '';
 
-        // If requested quantity exceeds available stock, return with an error notification
-        if ($new_quantity < 0) {
+        // Compute total available across non-expired purchases
+        $today = \Illuminate\Support\Carbon::now();
+        $purchases = Purchase::where(function($q) use ($today){
+            $q->whereNull('expiry_date')->orWhereDate('expiry_date','>', $today);
+        })->get()->filter(function($pu){
+            return !empty($pu->product);
+        });
+
+        // Build map of normalized purchase label -> purchase objects
+        $availableTotal = 0;
+        $label = $sold_product->product_name ?? optional($sold_product->purchase)->product ?? null;
+        if(!$label){
+            $notification = notify("Producto no encontrado o no tiene etiqueta.", 'danger');
+            return redirect()->back()->with($notification);
+        }
+
+        $normLabel = \Illuminate\Support\Str::ascii(mb_strtolower(trim($label)));
+        $candidatePurchases = [];
+        foreach($purchases as $pu){
+            $pNorm = \Illuminate\Support\Str::ascii(mb_strtolower(trim($pu->product)));
+            if($pNorm === $normLabel){
+                $remaining = max(0, (int)$pu->quantity - (int)($pu->sold ?? 0));
+                if($remaining > 0){
+                    $candidatePurchases[] = $pu;
+                    $availableTotal += $remaining;
+                }
+            }
+        }
+
+        if($toSell > $availableTotal){
             $notification = notify("No hay suficientes existencias para completar la salida.", 'danger');
             return redirect()->back()->with($notification);
         }
 
-        // Update purchase quantity and create sale
-        $purchased_item->update([
-            'quantity' => $new_quantity,
-        ]);
+        // allocate the sale to purchases FIFO by entry_date (or id)
+        $remain = $toSell;
+        $allocations = [];
+        usort($candidatePurchases, function($a,$b){
+            return strtotime($a->entry_date) <=> strtotime($b->entry_date);
+        });
+        foreach($candidatePurchases as $pu){
+            if($remain <= 0) break;
+            $available = max(0, (int)$pu->quantity - (int)($pu->sold ?? 0));
+            if($available <= 0) continue;
+            $take = min($available, $remain);
+            // increment sold
+            $pu->sold = ((int)$pu->sold) + $take;
+            $pu->save();
+            $allocations[] = ['purchase_id' => $pu->id, 'quantity' => $take];
+            $remain -= $take;
+        }
 
-        // calculating item's total price
-        $total_price = (float) $request->quantity * (float) $sold_product->price;
-        Sale::create([
+        // create sale
+        $total_price = (float) $toSell * (float) $sold_product->price;
+        $sale = Sale::create([
             'product_id' => $request->product,
-            'quantity' => $request->quantity,
+            'quantity' => $toSell,
             'total_price' => $total_price,
             'destination' => $request->destination ?? null,
         ]);
 
+        // persist allocations
+        foreach($allocations as $a){
+            \Illuminate\Support\Facades\DB::table('sale_purchase_allocations')->insert([
+                'sale_id' => $sale->id,
+                'purchase_id' => $a['purchase_id'],
+                'quantity' => $a['quantity'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
         $notification = notify("El Producto Ha Salido.");
 
         // Check low stock and notify only after a successful sale
-        if ($new_quantity <= 1 && $new_quantity != 0) {
-            $product = Purchase::where('quantity', '<=', 1)->first();
-            event(new PurchaseOutStock($product));
-            $notification = notify("¡El producto se está agotando!", 'warning');
+        $remainingTotal = max(0, $availableTotal - $toSell);
+        if ($remainingTotal <= 1 && $remainingTotal != 0) {
+            // find a purchase batch with low remaining stock to include in notification
+            $low = Purchase::whereRaw('(quantity - COALESCE(sold,0)) <= 1')->whereRaw('(quantity - COALESCE(sold,0)) > 0')->first();
+            if($low){
+                event(new PurchaseOutStock($low));
+                $notification = notify("¡El producto se está agotando!", 'warning');
+            }
         }
 
         return redirect()->route('sales.index')->with($notification);
@@ -191,7 +273,39 @@ class SaleController extends Controller
     public function edit(Sale $sale)
     {
         $title = 'edit sale';
-        $products = Product::get();
+        // Similar logic as create: only show products that have non-expired stock
+        $today = Carbon::now();
+        $available = [];
+        try{
+            $purchases = Purchase::where(function($q) use ($today){
+                $q->whereNull('expiry_date')->orWhereDate('expiry_date','>', $today);
+            })->get();
+            $sums = [];
+            foreach($purchases as $pu){
+                if(empty($pu->product)) continue;
+                $key = Str::ascii(mb_strtolower(trim($pu->product)));
+                if(!isset($sums[$key])) $sums[$key] = 0;
+                $sums[$key] += (int) $pu->quantity;
+            }
+
+            $allProducts = Product::with('purchase')->get();
+            foreach($allProducts as $p){
+                $labels = [];
+                if(!empty($p->product_name)) $labels[] = trim($p->product_name);
+                if(!empty($p->purchase) && !empty($p->purchase->product)) $labels[] = trim($p->purchase->product);
+                foreach($labels as $lab){
+                    $k = Str::ascii(mb_strtolower($lab));
+                    if(isset($sums[$k]) && $sums[$k] > 0){
+                        $available[] = $p;
+                        break;
+                    }
+                }
+            }
+        }catch(\Exception $e){
+            $available = Product::with('purchase')->get();
+        }
+
+        $products = collect($available);
         return view('admin.sales.edit',compact(
             'title','sale','products'
         ));
@@ -211,7 +325,6 @@ class SaleController extends Controller
             'quantity'=>'required|integer|min:1',
             'destination' => 'required|string|max:255'
         ]);
-
         $newProduct = Product::find($request->product);
         $oldProduct = $sale->product;
 
@@ -219,54 +332,113 @@ class SaleController extends Controller
 
         try {
             $updated = DB::transaction(function() use ($sale, $oldProduct, $newProduct, $request, &$notification) {
-            $oldQty = (int) ($sale->quantity ?? 0);
-            $newQty = (int) $request->quantity;
+                $oldQty = (int) ($sale->quantity ?? 0);
+                $newQty = (int) $request->quantity;
 
-            // If product changed: restore old purchase stock, then deduct from new purchase
-            if (!empty($oldProduct) && $oldProduct->purchase) {
-                $oldPurchase = $oldProduct->purchase;
-                $oldPurchase->update([
-                    'quantity' => ($oldPurchase->quantity ?? 0) + $oldQty,
+                // Revert previous allocations (if any)
+                $oldAllocs = \Illuminate\Support\Facades\DB::table('sale_purchase_allocations')->where('sale_id', $sale->id)->get();
+                foreach($oldAllocs as $oa){
+                    $pu = Purchase::find($oa->purchase_id);
+                    if($pu){
+                        $pu->sold = max(0, ((int)$pu->sold) - (int)$oa->quantity);
+                        $pu->save();
+                    }
+                }
+                \Illuminate\Support\Facades\DB::table('sale_purchase_allocations')->where('sale_id', $sale->id)->delete();
+
+                // Now attempt to allocate new quantity similarly to store()
+                $toSell = $newQty;
+
+                $today = \Illuminate\Support\Carbon::now();
+                $purchases = Purchase::where(function($q) use ($today){
+                    $q->whereNull('expiry_date')->orWhereDate('expiry_date','>', $today);
+                })->get()->filter(function($pu){
+                    return !empty($pu->product);
+                });
+
+                $label = $newProduct->product_name ?? optional($newProduct->purchase)->product ?? null;
+                if(!$label){
+                    throw new \Exception('Producto no encontrado o no tiene etiqueta.');
+                }
+                $normLabel = \Illuminate\Support\Str::ascii(mb_strtolower(trim($label)));
+                $candidatePurchases = [];
+                $availableTotal = 0;
+                foreach($purchases as $pu){
+                    $pNorm = \Illuminate\Support\Str::ascii(mb_strtolower(trim($pu->product)));
+                    if($pNorm === $normLabel){
+                        $remaining = max(0, (int)$pu->quantity - (int)($pu->sold ?? 0));
+                        if($remaining > 0){
+                            $candidatePurchases[] = $pu;
+                            $availableTotal += $remaining;
+                        }
+                    }
+                }
+
+                if($toSell > $availableTotal){
+                    throw new \Exception('Cantidad insuficiente en stock para la actualización.');
+                }
+
+                // allocate
+                $remain = $toSell;
+                $allocations = [];
+                usort($candidatePurchases, function($a,$b){
+                    return strtotime($a->entry_date) <=> strtotime($b->entry_date);
+                });
+                foreach($candidatePurchases as $pu){
+                    if($remain <= 0) break;
+                    $available = max(0, (int)$pu->quantity - (int)($pu->sold ?? 0));
+                    if($available <= 0) continue;
+                    $take = min($available, $remain);
+                    $pu->sold = ((int)$pu->sold) + $take;
+                    $pu->save();
+                    $allocations[] = ['purchase_id' => $pu->id, 'quantity' => $take];
+                    $remain -= $take;
+                }
+
+                // Update sale
+                $total_price = (float) $newQty * (float) $newProduct->price;
+                $sale->update([
+                    'product_id' => $newProduct->id,
+                    'quantity' => $newQty,
+                    'total_price' => $total_price,
+                    'destination' => $request->destination ?? null,
                 ]);
-            }
 
-            if (empty($newProduct) || empty($newProduct->purchase)) {
-                throw new \Exception('Producto o compra asociada no encontrada.');
-            }
+                // persist allocations
+                foreach($allocations as $a){
+                    \Illuminate\Support\Facades\DB::table('sale_purchase_allocations')->insert([
+                        'sale_id' => $sale->id,
+                        'purchase_id' => $a['purchase_id'],
+                        'quantity' => $a['quantity'],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
 
-            $newPurchase = $newProduct->purchase;
-
-            // Compute final quantity after applying the update: start from current purchase quantity
-            // Current purchase quantity already reflects previous sales, so add back oldQty only if product didn't change.
-            // Simpler and safe approach: set final = current + (oldProduct == newProduct ? oldQty : 0) - newQty
-            $finalQuantity = ($newPurchase->quantity ?? 0) - $newQty;
-
-            // If the product is the same as before, we've already restored oldQty above, so finalQuantity is correct.
-            // If the product changed, oldQty was restored to oldPurchase, and newPurchase does not include oldQty.
-            if ($finalQuantity < 0) {
-                throw new \Exception('Cantidad insuficiente en stock para la actualización.');
-            }
-
-            $newPurchase->update([
-                'quantity' => $finalQuantity,
-            ]);
-
-            // Update sale
-            $total_price = (float) $newQty * (float) $newProduct->price;
-            $sale->update([
-                'product_id' => $newProduct->id,
-                'quantity' => $newQty,
-                'total_price' => $total_price,
-                'destination' => $request->destination ?? null,
-            ]);
-
-            if($finalQuantity <= 1 && $finalQuantity != 0){
-                $productLow = Purchase::where('quantity', '<=', 1)->first();
-                event(new PurchaseOutStock($productLow));
-                $notification = notify("¡El producto se está agotando!");
-            } else {
-                $notification = notify("El producto ha sido actualizado.");
-            }
+                // Check low stock similar to store()
+                $remainingTotal = 0;
+                $today = \Illuminate\Support\Carbon::now();
+                $purchases = Purchase::where(function($q) use ($today){
+                    $q->whereNull('expiry_date')->orWhereDate('expiry_date','>', $today);
+                })->get();
+                $label = $newProduct->product_name ?? optional($newProduct->purchase)->product ?? null;
+                if($label){
+                    $normLabel = \Illuminate\Support\Str::ascii(mb_strtolower(trim($label)));
+                    foreach($purchases as $pu){
+                        $pNorm = \Illuminate\Support\Str::ascii(mb_strtolower(trim($pu->product)));
+                        if($pNorm === $normLabel){
+                            $remainingTotal += max(0, (int)$pu->quantity - (int)($pu->sold ?? 0));
+                        }
+                    }
+                }
+                if ($remainingTotal <= 1 && $remainingTotal != 0) {
+                    $low = Purchase::whereRaw('(quantity - COALESCE(sold,0)) <= 1')->whereRaw('(quantity - COALESCE(sold,0)) > 0')->first();
+                    if($low){
+                        event(new PurchaseOutStock($low));
+                        $notification = notify("¡El producto se está agotando!");
+                    }
+                }
+                $notification = $notification ?: notify("El producto ha sido actualizado.");
 
                 return true;
             });
@@ -320,15 +492,24 @@ class SaleController extends Controller
      */
     public function destroy(Request $request)
     {
-        $sale = Sale::with('product.purchase')->findOrFail($request->id);
+        $sale = Sale::with('product')->findOrFail($request->id);
 
         $deleted = DB::transaction(function() use ($sale) {
-            if (!empty($sale->product) && !empty($sale->product->purchase)) {
-                $purchase = $sale->product->purchase;
-                $purchase->update([
-                    'quantity' => ($purchase->quantity ?? 0) + ($sale->quantity ?? 0),
-                ]);
+            // Revert allocations if present
+            $allocs = \Illuminate\Support\Facades\DB::table('sale_purchase_allocations')->where('sale_id', $sale->id)->get();
+            foreach($allocs as $a){
+                try{
+                    $pu = Purchase::find($a->purchase_id);
+                    if($pu){
+                        $pu->sold = max(0, ((int)$pu->sold) - (int)$a->quantity);
+                        $pu->save();
+                    }
+                }catch(\Exception $e){
+                    continue;
+                }
             }
+            // delete allocation rows
+            \Illuminate\Support\Facades\DB::table('sale_purchase_allocations')->where('sale_id', $sale->id)->delete();
 
             return $sale->delete();
         });

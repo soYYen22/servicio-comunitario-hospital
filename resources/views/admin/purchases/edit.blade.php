@@ -29,17 +29,15 @@
 						<div class="col-lg-4">
 							<div class="form-group">
 								<label>Nombre del medicamento <span class="text-danger">*</span></label>
-								<input class="form-control" type="text" value="{{$purchase->product}}" name="product">
+								<!-- Mostrar el nombre pero no permitir editarlo. Incluir campo oculto para enviar el valor. -->
+								<input class="form-control" type="text" value="{{$purchase->product}}" disabled>
+								<input type="hidden" name="product" value="{{$purchase->product}}">
 							</div>
 						</div>
 						<div class="col-lg-4">
 							<div class="form-group">
-								<label>Categoría <span class="text-danger">*</span></label>
-								<select class="select2 form-select form-control" name="category"> 
-									@foreach ($categories as $category)
-										<option {{($purchase->category->id == $category->id) ? 'selected': ''}} value="{{$category->id}}">{{$category->name}}</option>
-									@endforeach
-								</select>
+								<label>Categoría</label>
+								<input class="form-control" type="text" value="{{ optional($purchase->category)->name ?? (optional($purchase->purchaseProduct->category)->name ?? '') }}" disabled>
 							</div>
 						</div>
 						<div class="col-lg-4">
@@ -61,11 +59,33 @@
 							<div class="col-lg-6">
 								<div class="form-group">
 									<label>Lote <span class="text-danger">*</span></label>
-									@php
-										$displayLote = old('lote') ?? (isset($purchase->purchaseProduct) && isset($purchase->purchaseProduct->lote) ? $purchase->purchaseProduct->lote : '') ?? '';
-									@endphp
-									<input class="form-control" type="text" name="lote" value="{{ $displayLote }}">
-									<input type="hidden" name="lot" value="{{ $displayLote }}">
+										@php
+											// Show the purchase's own lote first, fall back to old input or linked product lote
+											$displayLote = old('lote') ?? ($purchase->lote ?? (isset($purchase->purchaseProduct) && isset($purchase->purchaseProduct->lote) ? $purchase->purchaseProduct->lote : ''));
+										@endphp
+										<div class="input-group">
+											<div class="input-group-prepend">
+												<div class="btn-group">
+													<button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+														<i class="fa fa-angle-left"></i>
+													</button>
+													<div class="dropdown-menu">
+														@isset($existingLotes)
+															@foreach($existingLotes as $lote)
+																<a class="dropdown-item lote-item" href="#" data-lote="{{ $lote }}">{{ $lote }}</a>
+															@endforeach
+														@endisset
+														@if(!isset($existingLotes) || count($existingLotes) === 0)
+															<span class="dropdown-item disabled">No hay lotes</span>
+														@endif
+													</div>
+												</div>
+											</div>
+											<input id="lote-input" class="form-control" type="text" name="lote" value="{{ $displayLote }}" placeholder="Escriba o seleccione un lote">
+										</div>
+										@error('lote')
+											<span class="text-danger">{{ $message }}</span>
+										@enderror
 								</div>
 							</div>
 
@@ -116,4 +136,14 @@
 @push('page-js')
 	<!-- Select2 JS -->
 	<script src="{{asset('assets/plugins/select2/js/select2.min.js')}}"></script>
+	<script>
+		$(document).ready(function(){
+			// Clicking an existing lote in dropdown sets the lote input value
+			$(document).on('click', '.lote-item', function(e){
+				e.preventDefault();
+				var lote = $(this).data('lote');
+				$('#lote-input').val(lote);
+			});
+		});
+	</script>
 @endpush

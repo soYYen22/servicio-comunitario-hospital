@@ -35,7 +35,6 @@
 								<th>Nombre del Producto</th>
 								<th>Cantidad</th>
 								<th>Destino</th>
-								<th>Lote</th>
 								<th>Fecha</th>
 								<th class="action-btn">Acción</th>
 							</tr>
@@ -65,7 +64,6 @@
 				{data: 'product', name: 'product'},
 				{data: 'quantity', name: 'quantity'},
 						{data: 'destination', name: 'destination'},
-				{data: 'lote', name: 'lote'},
 					{data: 'date', name: 'date'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]

@@ -112,7 +112,6 @@
                             <tr>
                                 <th>Medicamento</th>
                                 <th>Cantidad</th>
-                                <th>Lote</th>
                                 <th>Fecha</th>
                             </tr>
                         </thead>
@@ -168,7 +167,6 @@
                 columns: [
                 {data: 'product', name: 'product'},
                 {data: 'quantity', name: 'quantity'},
-                {data: 'lote', name: 'lote'},
                 {data: 'date', name: 'date'},
             ]
         });
