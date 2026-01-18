@@ -31,7 +31,7 @@
 								<div class="form-group">
 											<label>Nombre del medicamento <span class="text-danger">*</span></label>
 											<select class="select2 form-select form-control" name="product">
-												<option value="">Seleccione un producto</option>
+												<option value="">Seleccione un medicamento</option>
 												@foreach($products as $p)
 													@php
 														$label = $p->product_name ?? optional($p->purchase)->product ?? '';

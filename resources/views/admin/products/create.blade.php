@@ -28,8 +28,8 @@
                             
                             <div class="col-lg-12">
                                 <div class="form-group">
-                                    <label>Producto <span class="text-danger">*</span></label>
-                                    <input class="form-control" type="text" name="product_name" value="{{ old('product_name') }}" placeholder="Escriba el nombre del producto">
+                                    <label>Nombre del Medicamento <span class="text-danger">*</span></label>
+                                    <input class="form-control" type="text" name="product_name" value="{{ old('product_name') }}" placeholder="Escriba el nombre del medicamento">
                                 </div>
                             </div>
                             <div class="col-lg-12">

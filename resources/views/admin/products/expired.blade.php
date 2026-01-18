@@ -27,7 +27,7 @@
 					<table id="expired-product" class="datatable table table-striped table-bordered table-hover table-center mb-0">
 						<thead>
 							<tr>
-								<th>Nombre de marca</th>
+								<th>Producto</th>
 								<th>Categoría</th>
 								<th>Cantidad</th>
 								<th class="action-btn">Acción</th>

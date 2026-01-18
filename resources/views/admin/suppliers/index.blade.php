@@ -81,15 +81,15 @@
             processing: true,
             serverSide: true,
             ajax: "{{route('suppliers.index')}}",
-            columns: [
-                {data: 'product', name: 'product'},
-                {data: 'name', name: 'name'},
-                {data: 'email', name: 'email'},
-                {data: 'phone', name: 'phone'},
-                {data: 'address', name: 'address'},
-                {data: 'company', name: 'company'},
-                {data: 'action', name: 'action', orderable: false, searchable: false},
-            ]
+			columns: [
+				{data: 'product', name: 'product'},
+				{data: 'name', name: 'name'},
+				{data: 'phone', name: 'phone'},
+				{data: 'email', name: 'email'},
+				{data: 'address', name: 'address'},
+				{data: 'company', name: 'company'},
+				{data: 'action', name: 'action', orderable: false, searchable: false},
+			]
         });
     });
 </script> 

@@ -26,12 +26,12 @@
 					<div class="row form-row">
 						<div class="col-12">
 							<div class="form-group">
-								<label>Producto <span class="text-danger">*</span></label>
+								<label>Medicamento <span class="text-danger">*</span></label>
 								<select class="select2 form-select form-control" name="product"> 
 									@foreach ($products as $product)
 										@if (!empty($product->purchase))
 											@if (!($product->purchase->quantity <= 0))
-                                                <option disabled selected>Seleccionar producto</option>
+												<option disabled selected>Seleccionar medicamento</option>
 												<option value="{{$product->id}}">{{$product->purchase->product}}</option>
 											@endif
 										@endif

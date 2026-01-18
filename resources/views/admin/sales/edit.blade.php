@@ -26,7 +26,7 @@
 					<div class="row form-row">
 						<div class="col-12">
 							<div class="form-group">
-								<label>Producto <span class="text-danger">*</span></label>
+								<label>Medicamento <span class="text-danger">*</span></label>
 								@php
 									$productLabel = $sale->product->product_name ?? optional($sale->product->purchase)->product ?? '';
 									$productId = $sale->product->id ?? '';

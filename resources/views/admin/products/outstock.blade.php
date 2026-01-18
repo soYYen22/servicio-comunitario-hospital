@@ -27,7 +27,7 @@
 					<table id="outstock-product" class=" table table-hover table-center mb-0">
 						<thead>
 							<tr>
-								<th>Nombre de marca</th>
+								<th>Producto</th>
 								<th>Categoría</th>
 								<th>Cantidad</th>
 							</tr>

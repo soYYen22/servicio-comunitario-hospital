@@ -32,7 +32,7 @@
 					<table id="sales-table" class="datatable table table-hover table-center mb-0">
 						<thead>
 							<tr>
-								<th>Nombre del Producto</th>
+								<th>Nombre del Medicamento</th>
 								<th>Cantidad</th>
 								<th>Destino</th>
 								<th>Fecha</th>
