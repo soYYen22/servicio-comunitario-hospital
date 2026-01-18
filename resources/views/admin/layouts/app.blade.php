@@ -101,19 +101,20 @@
         $('body').on('click','#deletebtn',function(){
             var id = $(this).data('id');
             var route = $(this).data('route');
+            var isHideExpired = route && route.indexOf('hide-expired') !== -1;
             swal.queue([
                 {
-                    title: "¿Estás seguro?",
-                    text: "¡No podrás revertir esta acción!",
+                    title: isHideExpired ? "¿Quitar de Vencidos?" : "¿Estás seguro?",
+                    text: isHideExpired ? "Esto solo lo quitará de la lista Vencidos; la entrada permanecerá en Entradas." : "¡No podrás revertir esta acción!",
                     type: "warning",
                     showCancelButton: true,
-                    confirmButtonText: '<i class="fe fe-trash mr-1"></i> ¡Sí, eliminar!',
+                    confirmButtonText: isHideExpired ? '<i class="fe fe-trash mr-1"></i> Quitar' : '<i class="fe fe-trash mr-1"></i> ¡Sí, eliminar!',
                     cancelButtonText: '<i class="fa fa-times mr-1"></i> Cancelar',
                     confirmButtonClass: "btn btn-success mt-2",
                     cancelButtonClass: "btn btn-danger ml-2 mt-2",
                     buttonsStyling: false,
                     preConfirm: function(){
-                        return new Promise(function(){
+                        return new Promise(function(resolve, reject){
                             $.ajax({
                                 url: route,
                                 type: "DELETE",
@@ -121,14 +122,34 @@
                                 success: function(){
                                     swal.insertQueueStep(
                                         Swal.fire({
-                                            title: "¡Eliminado!",
-                                            text: "El recurso ha sido eliminado correctamente.",
-                                            type: "success",
+                                            title: isHideExpired ? "Quitado de Vencidos" : "¡Eliminado!",
+                                            text: isHideExpired ? "La entrada ya no aparece en Vencidos." : "El recurso ha sido eliminado correctamente.",
+                                            icon: "success",
                                             showConfirmButton: false,
                                             timer: 1500,
                                         })
-                                    )
+                                    );
                                     $('.datatable').DataTable().ajax.reload();
+                                    resolve(true);
+                                },
+                                error: function(xhr){
+                                    var msg = 'Ocurrió un error.';
+                                    try{
+                                        var json = JSON.parse(xhr.responseText);
+                                        if(json && json.message) msg = json.message;
+                                    }catch(e){ }
+                                    swal.insertQueueStep(
+                                        Swal.fire({
+                                            title: 'Error',
+                                            text: msg,
+                                            icon: 'error',
+                                            showConfirmButton: false,
+                                            timer: 2000,
+                                        })
+                                    );
+                                    // reload table to reflect any partial change
+                                    $('.datatable').DataTable().ajax.reload();
+                                    resolve(false);
                                 }
                             })
                         })

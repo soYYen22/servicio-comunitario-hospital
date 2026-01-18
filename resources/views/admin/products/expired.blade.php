@@ -27,11 +27,9 @@
 					<table id="expired-product" class="datatable table table-striped table-bordered table-hover table-center mb-0">
 						<thead>
 							<tr>
-								<th>Nombre de marca</th>
+								<th>Producto</th>
 								<th>Categoría</th>
-								<th>Lote</th>
 								<th>Cantidad</th>
-								<th>Fecha de vencimiento</th>
 								<th class="action-btn">Acción</th>
 							</tr>
 						</thead>
@@ -57,14 +55,12 @@
             processing: true,
             serverSide: true,
             ajax: "{{route('expired')}}",
-            columns: [
-                {data: 'product', name: 'product'},
-                {data: 'category', name: 'category'},
-                {data: 'lote', name: 'lote'},
-                {data: 'quantity', name: 'quantity'},
-				{data: 'expiry_date', name: 'expiry_date'},
-                {data: 'action', name: 'action', orderable: false, searchable: false},
-            ]
+				columns: [
+				{data: 'product', name: 'product'},
+				{data: 'category', name: 'category'},
+						{data: 'quantity', name: 'quantity'},
+				{data: 'action', name: 'action', orderable: false, searchable: false},
+			]
         });
         
     });

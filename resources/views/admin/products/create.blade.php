@@ -28,10 +28,17 @@
                             
                             <div class="col-lg-12">
                                 <div class="form-group">
-                                    <label>Producto <span class="text-danger">*</span></label>
-                                    <select class="select2 form-select form-control" name="product"> 
-                                        @foreach ($purchases as $purchase)
-                                            <option value="{{$purchase->id}}">{{$purchase->product}}</option>
+                                    <label>Nombre del Medicamento <span class="text-danger">*</span></label>
+                                    <input class="form-control" type="text" name="product_name" value="{{ old('product_name') }}" placeholder="Escriba el nombre del medicamento">
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <label>Categoría <span class="text-danger">*</span></label>
+                                    <select class="select2 form-select form-control" name="category_id">
+                                        <option value="">Seleccione una categoría</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -39,16 +46,7 @@
                         </div>
                     </div>
                     
-                    <div class="service-fields mb-3">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <label>Lote <span class="text-danger">*</span></label>
-                                    <input class="form-control" type="text" name="lote" value="{{ old('lote') }}">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
 
                     <div class="service-fields mb-3">
                         <div class="row">

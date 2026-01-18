@@ -64,9 +64,16 @@
                                     </td>
                                     <td>{{$purchase->category->name}}</td>
                                     <td>
-                                        @if(!empty($purchase->purchaseProduct) && isset($purchase->purchaseProduct->lote))
+                                        @if(!empty($purchase->purchaseProduct) && isset($purchase->purchaseProduct->lote) && $purchase->purchaseProduct->lote)
                                             {{ $purchase->purchaseProduct->lote }}
                                         @else
+                                            @php
+                                                $fallback = '';
+                                                if(isset($loteByName) && !empty($purchase->product)){
+                                                    $fallback = $loteByName[$purchase->product] ?? '';
+                                                }
+                                            @endphp
+                                            {{ $fallback }}
                                         @endif
                                     </td>
                                     <td>{{$purchase->quantity}}</td>

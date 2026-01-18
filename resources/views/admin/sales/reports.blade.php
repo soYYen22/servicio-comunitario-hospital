@@ -40,10 +40,9 @@
                         <table id="sales-table" class="datatable table table-hover table-center mb-0">
                             <thead>
 								<tr>
-									<th>Nombre del Producto</th>
+									<th>Nombre del Medicamento</th>
 									<th>Cantidad</th>
-								<th>Destino</th>
-									<th>Lote</th>
+									<th>Destino</th>
 									<th>Fecha</th>
 								</tr>
                             </thead>
@@ -61,7 +60,6 @@
                                             </td>
 											<td>{{$sale->quantity}}</td>
 											<td>{{ $sale->destination ?? '' }}</td>
-											<td>{{ isset($sale->product) && isset($sale->product->lote) ? $sale->product->lote : '' }}</td>
 										<td>{{ \Carbon\Carbon::parse($sale->created_at)->locale('es')->translatedFormat('d F, Y') }}</td>
                                         </tr>
                                     @endif

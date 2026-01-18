@@ -30,13 +30,9 @@
 					<table id="product-table" class="datatable table table-hover table-center mb-0">
 						<thead>
 							<tr>
-								<th>Nombre del producto</th>
+								<th>Nombre del medicamento</th>
 								<th>Categoría</th>
-								<th>Lote</th>
 								<th>Cantidad</th>
-								<!-- Descuento eliminado -->
-								<th>Fecha de vencimiento</th>
-                                <th>Fecha de entrada</th>
 								<th class="action-btn">Acción</th>
 							</tr>
 						</thead>
@@ -58,21 +54,17 @@
 @push('page-js')
 <script>
     $(document).ready(function() {
-        var table = $('#product-table').DataTable({
-            processing: true,
-            serverSide: false,
-            ajax: "{{route('products.index')}}",
-            columns: [
-                {data: 'product', name: 'product'},
-                {data: 'category', name: 'category'},
-                {data: 'lote', name: 'lote'},
-                {data: 'quantity', name: 'quantity'},
-				// Descuento eliminado
-				{data: 'expiry_date', name: 'expiry_date'},
-					{data: 'entry_date', name: 'entry_date'},
-                {data: 'action', name: 'action', orderable: false, searchable: false},
-            ]
-        });
+		var table = $('#product-table').DataTable({
+			processing: true,
+			serverSide: true,
+			ajax: "{{route('products.index')}}",
+			columns: [
+				{data: 'product', name: 'product'},
+				{data: 'category', name: 'category'},
+				{data: 'quantity', name: 'quantity'},
+				{data: 'action', name: 'action', orderable: false, searchable: false},
+			]
+		});
         
     });
 </script> 
